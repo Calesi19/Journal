@@ -1,4 +1,4 @@
-![Banner](docs/banner.png)
+![Banner](docs/banner.webp)
 
 ## Technologies Used
 
