@@ -6,7 +6,6 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardFooter,
   Textarea,
   Button,
   DropdownMenu,
@@ -52,7 +51,7 @@ function NewPost(): React.JSX.Element {
   );
 
   return (
-    <section className="flex flex-col gap-2">
+    <section className="flex flex-col gap-2 ">
       <Textarea minRows={10} />
       <div className="flex justify-between">
         <div className="flex gap-2">
@@ -132,29 +131,57 @@ function OldPost(): React.JSX.Element {
 
 function Menu(): React.JSX.Element {
   return (
-    <section className="hidden md:flex flex-col">
-      <Input
-        classNames={{
-          mainWrapper: "h-full",
+    <section className="hidden md:flex flex-col justify-between">
+      <div className="h-[200px]">
+        <Input
+          classNames={{
+            mainWrapper: "h-full",
 
-          inputWrapper:
-            "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
-        }}
-        placeholder="Type to search..."
-        startContent={<FaSearch size={18} />}
-        type="search"
-        fullWidth
-      />
-      <div className="w-full overflow-scroll hide-scrollbar ">
-        <ul className="pt-16">
-          <li className="py-2 hover:text-red-200">
-            <a href="#">church</a>
-          </li>
-          <li className="py-2">stoic</li>
-          <li className="py-2">money</li>
-          <li className="py-2">life</li>
-        </ul>
-        
+            inputWrapper:
+              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+          }}
+          placeholder="Type to search..."
+          startContent={<FaSearch size={18} />}
+          type="search"
+          fullWidth
+        />
+        <ScrollShadow className=" hide-scrollbar">
+          <ul className="pt-16">
+            <li className="py-2 hover:text-red-200">
+              <a href="#">church</a>
+            </li>
+            <li className="py-2">stoic</li>
+            <li className="py-2">money</li>
+            <li className="py-2">life</li>
+            <li className="py-2 hover:text-red-200">
+              <a href="#">church</a>
+            </li>
+            <li className="py-2">stoic</li>
+            <li className="py-2">money</li>
+            <li className="py-2">life</li>
+            <li className="py-2 hover:text-red-200">
+              <a href="#">church</a>
+            </li>
+            <li className="py-2">stoic</li>
+            <li className="py-2">money</li>
+            <li className="py-2">life</li>
+            <li className="py-2 hover:text-red-200">
+              <a href="#">church</a>
+            </li>
+            <li className="py-2">stoic</li>
+            <li className="py-2">money</li>
+            <li className="py-2">life</li>
+            
+          </ul>
+        </ScrollShadow>
+      </div>
+      <div>
+        <div className="pb-4">
+          <a href="/settings">Settings</a>
+        </div>
+        <div className="pb-16">
+          <a href="/login">Sign Out</a>
+        </div>
       </div>
     </section>
   );
