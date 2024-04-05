@@ -1,7 +1,5 @@
 import "../styles/globals.css";
 import type { Metadata } from "next";
-import { siteConfig } from "../config/site";
-import { fontSans } from "../config/fonts";
 import { Providers } from "./providers";
 import { Navbar } from "../components/navbar";
 import clsx from "clsx";
@@ -10,10 +8,10 @@ import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
+    default: "Journal",
+    template: `%s - ${"Journal"}`,
   },
-  description: siteConfig.description,
+  description: "Like Twitter, but private.",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",
@@ -31,8 +29,7 @@ export default function RootLayout({
       <head />
       <body
         className={clsx(
-          "h-screen w-full bg-background font-sans antialiased",
-          fontSans.variable
+          "h-screen w-full bg-background font-sans antialiased"
         )}
       >
         <Analytics />

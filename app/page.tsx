@@ -8,10 +8,6 @@ import {
   CardBody,
   Textarea,
   Button,
-  DropdownMenu,
-  DropdownItem,
-  Dropdown,
-  DropdownTrigger,
 } from "@nextui-org/react";
 import { FaSearch } from "react-icons/fa";
 
@@ -54,52 +50,7 @@ function NewPost(): React.JSX.Element {
     <section className="flex flex-col gap-2 ">
       <Textarea minRows={10} />
       <div className="flex justify-between">
-        <div className="flex gap-2">
-          <Dropdown>
-            <DropdownTrigger>
-              <Button variant="bordered" className="capitalize">
-                {selectedValue}
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              aria-label="Multiple selection example"
-              variant="flat"
-              closeOnSelect={false}
-              disallowEmptySelection
-              selectionMode="multiple"
-              selectedKeys={selectedKeys}
-              onSelectionChange={(keys: Set<string>) => setSelectedKeys(keys)}
-            >
-              <DropdownItem key="text">Text</DropdownItem>
-              <DropdownItem key="number">Number</DropdownItem>
-              <DropdownItem key="date">Date</DropdownItem>
-              <DropdownItem key="single_date">Single Date</DropdownItem>
-              <DropdownItem key="iteration">Iteration</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-          <Dropdown>
-            <DropdownTrigger>
-              <Button variant="bordered" className="capitalize">
-                {selectedValue}
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              aria-label="Multiple selection example"
-              variant="flat"
-              closeOnSelect={false}
-              disallowEmptySelection
-              selectionMode="multiple"
-              selectedKeys={selectedKeys}
-              onSelectionChange={(keys: Set<string>) => setSelectedKeys(keys)}
-            >
-              <DropdownItem key="text">Text</DropdownItem>
-              <DropdownItem key="number">Number</DropdownItem>
-              <DropdownItem key="date">Date</DropdownItem>
-              <DropdownItem key="single_date">Single Date</DropdownItem>
-              <DropdownItem key="iteration">Iteration</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </div>
+        <div className="flex gap-2"></div>
         <Button>Post</Button>
       </div>
     </section>
@@ -108,24 +59,29 @@ function NewPost(): React.JSX.Element {
 
 function OldPost(): React.JSX.Element {
   return (
-    <Card className="py-4 my-16">
-      <CardHeader className="pb-0 pt-2 flex-col items-start">
-        <p className="text-tiny text-default-500 uppercase font-bold">
-          march 19, 2024
-        </p>
-      </CardHeader>
-      <CardBody className="overflow-visible py-2">
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry. Lorem Ipsum has been the industry's standard dummy text ever
-        since the 1500s, when an unknown printer took a galley of type and
-        scrambled it to make a type specimen book. It has survived not only five
-        centuries, but also the leap into electronic typesetting, remaining
-        essentially unchanged. It was popularised in the 1960s with the release
-        of Letraset sheets containing Lorem Ipsum passages, and more recently
-        with desktop publishing software like Aldus PageMaker including versions
-        of Lorem Ipsum.
-      </CardBody>
-    </Card>
+    <div className="my-10 group">
+      <Card className="">
+        <CardHeader className="pb-0 pt-2 flex-col items-start">
+          <p className="text-tiny text-default-500 uppercase font-bold">
+            march 19, 2024
+          </p>
+        </CardHeader>
+        <CardBody className="overflow-visible py-2">
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industry's standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        </CardBody>
+      </Card>
+      <div className=" text-transparent group-hover:text-white flex flex-row-reverse">
+        <a href="#">edit</a>
+      </div>
+    </div>
   );
 }
 
@@ -171,7 +127,6 @@ function Menu(): React.JSX.Element {
             <li className="py-2">stoic</li>
             <li className="py-2">money</li>
             <li className="py-2">life</li>
-            
           </ul>
         </ScrollShadow>
       </div>
