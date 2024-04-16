@@ -1,0 +1,6 @@
+﻿services:
+  journal-api:
+    image: journal-api
+    build:
+      context: .
+      dockerfile: Journal-API/Dockerfile
