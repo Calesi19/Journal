@@ -8,8 +8,8 @@ public interface IUserRepository
 {
     Task<User> FindByEmailAsync(string email);
     Task<User> FindByIdAsync(Guid id);
-    Task<User> AddAsync(User user);
-    Task<User> UpdateAsync(User user);
+    Task<User> AddAsync(User newUser);
+    Task<User> UpdateAsync(User updatedUser);
     Task<User> DeleteAsync(Guid id);
 }
 
@@ -34,23 +34,23 @@ public class UserRepository : IUserRepository
         return await _db.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
     }
 
-    public async Task<User> AddAsync(User user)
+    public async Task<User> AddAsync(User newUser)
     {
         var sql =
             "INSERT INTO users (id, email, password, is_email_Confirmed) "
             + "VALUES (@Id, @Email, @Password, @IsEmailConfirmed)";
-        await _db.ExecuteAsync(sql, user);
-        return user;
+        await _db.ExecuteAsync(sql, newUser);
+        return newUser;
     }
 
-    public async Task<User> UpdateAsync(User user)
+    public async Task<User> UpdateAsync(User updatedUser)
     {
         var sql =
             "UPDATE users SET email = @Email, password = @Password, "
             + "is_email_confirmed = @IsEmailConfirmed "
             + "WHERE id = @Id";
-        await _db.ExecuteAsync(sql, user);
-        return user;
+        await _db.ExecuteAsync(sql, updatedUser);
+        return updatedUser;
     }
 
     public async Task<User> DeleteAsync(Guid id)
