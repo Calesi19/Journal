@@ -1,29 +1,32 @@
 using JournalApi.DTOs;
 using JournalApi.Models;
 using JournalApi.Repositories;
+using JournalApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JournalApi.Controllers;
 
 [ApiController]
+[Authorize]
 public class UserPostController : ControllerBase
 {
     private readonly IPostRepository _postRepository;
+    private readonly ITokenService _tokenService;
 
-    public UserPostController(IPostRepository postRepository)
+    public UserPostController(IPostRepository postRepository, ITokenService tokenService)
     {
         _postRepository = postRepository;
+        _tokenService = tokenService;
     }
 
-    [Authorize]
     [HttpGet("accounts/posts")]
     public async Task<IActionResult> GetPosts(
         [FromHeader] string Authorization,
         [FromQuery] GetPostsRequest request
     )
     {
-        var userId = Guid.Parse(User.FindFirst("nameid").Value);
+        var userId = _tokenService.GetUserIdFromToken(Authorization);
 
         var posts = await _postRepository.FindByUserIdAsync(userId);
 
@@ -35,14 +38,13 @@ public class UserPostController : ControllerBase
         return Ok(response);
     }
 
-    [Authorize]
     [HttpPost("accounts/posts")]
     public async Task<IActionResult> CreatePost(
         [FromHeader] string Authorization,
         [FromBody] ApiRequest<CreatePostRequest> request
     )
     {
-        var userId = Guid.Parse(User.FindFirst("nameid").Value);
+        var userId = _tokenService.GetUserIdFromToken(Authorization);
 
         var newPost = new Post
         {

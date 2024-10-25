@@ -56,6 +56,13 @@ public class AuthenticationController : ControllerBase
     }
 
     [AllowAnonymous]
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> Refresh([FromHeader] string RefreshToken)
+    {
+        return Ok();
+    }
+
+    [AllowAnonymous]
     [HttpPost("accounts")]
     public async Task<IActionResult> CreateAccount(
         [FromBody] ApiRequest<CreateAccountRequest> request
