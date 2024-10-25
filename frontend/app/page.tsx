@@ -135,7 +135,9 @@ function Menu(): React.JSX.Element {
           <a href="/settings">Settings</a>
         </div>
         <div className="pb-16">
-          <a href="/login">Sign Out</a>
+          <a href="/login" className="hover:text-red-500">
+            Sign Out
+          </a>
         </div>
       </div>
     </section>

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState } from "react";
 import { Tabs, Tab, Card, CardBody, Input, Button } from "@nextui-org/react";
@@ -121,7 +121,7 @@ function Login(): React.JSX.Element {
       </Card>
       <div>
         <p className="text-center mt-4">
-          <a href="#" className="text-default-300">
+          <a href="#" className="text-default-300 hover:text-blue-500">
             Forgot Password?
           </a>
         </p>
