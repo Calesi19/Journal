@@ -40,10 +40,6 @@ func authMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 }
 
 func login(c echo.Context) error {
-	// Do some authentication stuff
-
-	// Check username and password
-	// If username and password is invalid, return error
 
 	username := c.FormValue("username")
 	password := c.FormValue("password")
