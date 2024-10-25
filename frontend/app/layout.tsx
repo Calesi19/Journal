@@ -1,7 +1,6 @@
 import "../styles/globals.css";
 import type { Metadata } from "next";
 import { Providers } from "./providers";
-import { Navbar } from "../components/navbar";
 import clsx from "clsx";
 
 import { Analytics } from "@vercel/analytics/react";
@@ -28,14 +27,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className="h-full">
       <head />
       <body
-        className={clsx(
-          "h-screen w-full bg-background font-sans antialiased"
-        )}
+        className={clsx("h-screen w-full bg-background font-sans antialiased")}
       >
         <Analytics />
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="relative flex flex-col">
-            
             <main className="h-screen">{children}</main>
           </div>
         </Providers>
