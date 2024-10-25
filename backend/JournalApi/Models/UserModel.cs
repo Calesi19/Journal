@@ -1,9 +1,9 @@
-namespace JournalApi;
+namespace JournalApi.Models;
 
-public class UserModel
+public class User
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
-    public bool emailConfirmed { get; set; } = false;
+    public bool IsEmailConfirmed { get; set; } = false;
 }

@@ -1,15 +1,16 @@
 using System.Data;
 using Dapper;
+using JournalApi.Models;
 
-namespace JournalApi;
+namespace JournalApi.Repositories;
 
 public interface IUserRepository
 {
-    Task<UserModel> GetUserByEmail(string email);
-    Task<UserModel> GetUserById(Guid id);
-    Task<UserModel> CreateUser(UserModel user);
-    Task<UserModel> UpdateUser(UserModel user);
-    Task<UserModel> DeleteUser(Guid id);
+    Task<User> FindByEmailAsync(string email);
+    Task<User> FindByIdAsync(Guid id);
+    Task<User> AddAsync(User user);
+    Task<User> UpdateAsync(User user);
+    Task<User> DeleteAsync(Guid id);
 }
 
 public class UserRepository : IUserRepository
@@ -21,54 +22,40 @@ public class UserRepository : IUserRepository
         _db = db;
     }
 
-    public async Task<UserModel> GetUserByEmail(string email)
+    public async Task<User> FindByEmailAsync(string email)
     {
-        var sql = "SELECT * FROM Users WHERE Email = @Email";
-        return await _db.QueryFirstOrDefaultAsync<UserModel>(sql, new { Email = email });
+        var sql = "SELECT * FROM users WHERE email = @Email";
+        return await _db.QueryFirstOrDefaultAsync<User>(sql, new { Email = email });
     }
 
-    public async Task<UserModel> GetUserById(Guid id)
+    public async Task<User> FindByIdAsync(Guid id)
     {
-        var sql = "SELECT * FROM Users WHERE Id = @Id";
-        return await _db.QueryFirstOrDefaultAsync<UserModel>(sql, new { Id = id });
+        var sql = "SELECT * FROM users WHERE id = @Id";
+        return await _db.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
     }
 
-    public async Task<UserModel> CreateUser(UserModel user)
+    public async Task<User> AddAsync(User user)
     {
         var sql =
-            "INSERT INTO Users (Id, Email, Password, EmailConfirmed) "
-            + "VALUES (@Id, @Email, @Password, @EmailConfirmed)";
+            "INSERT INTO users (id, email, password, is_email_Confirmed) "
+            + "VALUES (@Id, @Email, @Password, @IsEmailConfirmed)";
         await _db.ExecuteAsync(sql, user);
         return user;
     }
 
-    public async Task<UserModel> UpdateUser(UserModel user)
+    public async Task<User> UpdateAsync(User user)
     {
         var sql =
-            "UPDATE Users SET Email = @Email, Password = @Password, "
-            + "EmailConfirmed = @EmailConfirmed WHERE Id = @Id";
+            "UPDATE users SET email = @Email, password = @Password, "
+            + "is_email_confirmed = @IsEmailConfirmed "
+            + "WHERE id = @Id";
         await _db.ExecuteAsync(sql, user);
         return user;
     }
 
-    public async Task<UserModel> DeleteUser(Guid id)
+    public async Task<User> DeleteAsync(Guid id)
     {
-        var sql = "DELETE FROM Users WHERE Id = @Id";
-        return await _db.QueryFirstOrDefaultAsync<UserModel>(sql, new { Id = id });
-    }
-
-    public async Task<UserModel> ConfirmEmail(Guid id)
-    {
-        var sql = "UPDATE Users SET EmailConfirmed = true WHERE Id = @Id";
-        return await _db.QueryFirstOrDefaultAsync<UserModel>(sql, new { Id = id });
-    }
-
-    public async Task<UserModel> ChangePassword(Guid id, string password)
-    {
-        var sql = "UPDATE Users SET Password = @Password WHERE Id = @Id";
-        return await _db.QueryFirstOrDefaultAsync<UserModel>(
-            sql,
-            new { Id = id, Password = password }
-        );
+        var sql = "DELETE FROM users WHERE id = @Id";
+        return await _db.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
     }
 }

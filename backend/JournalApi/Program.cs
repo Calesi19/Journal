@@ -1,7 +1,11 @@
 using System.Data;
 using System.Text;
 using System.Text.Json;
+using JournalApi.Models;
+using JournalApi.Repositories;
+using JournalApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 
@@ -12,6 +16,11 @@ var app = builder.Build();
 builder.Services.AddTransient<IDbConnection>(x => new NpgsqlConnection(
     builder.Configuration.GetConnectionString("DatabaseConnection")
 ));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
 var jwtConfig = builder.Configuration.GetSection("JwtConfig");
 
@@ -72,7 +81,7 @@ builder
         };
     });
 
-// Add controllers to the services
+// Add services to the container.
 
 builder.Services.AddControllers();
 
