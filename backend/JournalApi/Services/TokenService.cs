@@ -10,7 +10,7 @@ namespace JournalApi.Services;
 public interface ITokenService
 {
     string GenerateAccessToken(User user);
-    string GenerateRefreshToken();
+    string GenerateRefreshToken(User user);
 }
 
 public class TokenService : ITokenService
@@ -30,6 +30,7 @@ public class TokenService : ITokenService
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Email, user.Email),
+            new("isEmailConfirmed", user.IsEmailConfirmed.ToString()),
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -43,11 +44,22 @@ public class TokenService : ITokenService
         return _tokenHandler.WriteToken(token);
     }
 
-    public string GenerateRefreshToken()
+    public string GenerateRefreshToken(User user)
     {
-        var randomNumber = new byte[32];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomNumber);
-        return Convert.ToBase64String(randomNumber);
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
+            new(ClaimTypes.Email, Guid.NewGuid().ToString()),
+        };
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(claims),
+            Expires = DateTime.UtcNow.AddDays(5),
+            SigningCredentials = new(_key, SecurityAlgorithms.HmacSha256Signature),
+        };
+
+        var token = _tokenHandler.CreateToken(tokenDescriptor);
+        return _tokenHandler.WriteToken(token);
     }
 }

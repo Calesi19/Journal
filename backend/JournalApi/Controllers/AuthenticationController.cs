@@ -45,7 +45,7 @@ public class AuthenticationController : ControllerBase
         }
 
         var token = _tokenService.GenerateAccessToken(user);
-        var refreshToken = _tokenService.GenerateRefreshToken();
+        var refreshToken = _tokenService.GenerateRefreshToken(user);
 
         var response = new ApiResponse<LoginResponse>
         {
