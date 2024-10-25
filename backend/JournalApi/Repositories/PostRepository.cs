@@ -6,7 +6,7 @@ namespace JournalApi.Repositories;
 
 public interface IPostRepository
 {
-    Task<Post> FindByUserIdAsync(Guid userId);
+    Task<List<Post>> FindByUserIdAsync(Guid userId);
     Task<Post> FindByIdAsync(Guid id);
     Task<Post> AddAsync(Post newPost);
     Task<Post> UpdateAsync(Post updatedPost);
@@ -22,10 +22,10 @@ public class PostRepository : IPostRepository
         _db = db;
     }
 
-    public async Task<Post> FindByUserIdAsync(Guid userId)
+    public async Task<List<Post>> FindByUserIdAsync(Guid userId)
     {
         var sql = "SELECT * FROM posts WHERE user_id = @UserId";
-        return await _db.QueryFirstOrDefaultAsync<Post>(sql, new { UserId = userId });
+        return (await _db.QueryAsync<Post>(sql, new { UserId = userId })).ToList();
     }
 
     public async Task<Post> FindByIdAsync(Guid id)
