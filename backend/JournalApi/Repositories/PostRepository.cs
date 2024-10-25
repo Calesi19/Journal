@@ -37,8 +37,9 @@ public class PostRepository : IPostRepository
     public async Task<Post> AddAsync(Post newPost)
     {
         var sql =
-            "INSERT INTO users (id, content, date_created, date_updated) "
-            + "VALUES (@Id, @Content, @DateCreated, @DateUpdated)";
+            "INSERT INTO posts (id, content, date_created, date_updated, "
+            + "user_id) "
+            + "VALUES (@Id, @Content, @DateCreated, @DateUpdated, @UserId)";
         await _db.ExecuteAsync(sql, newPost);
         return newPost;
     }
@@ -46,7 +47,7 @@ public class PostRepository : IPostRepository
     public async Task<Post> UpdateAsync(Post updatedPost)
     {
         var sql =
-            "UPDATE users SET email = @Email, password = @Password, "
+            "UPDATE posts SET email = @Email, password = @Password, "
             + "is_email_confirmed = @IsEmailConfirmed "
             + "WHERE id = @Id";
         await _db.ExecuteAsync(sql, updatedPost);
