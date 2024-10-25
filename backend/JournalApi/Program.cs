@@ -11,8 +11,6 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var app = builder.Build();
-
 builder.Services.AddTransient<IDbConnection>(x => new NpgsqlConnection(
     builder.Configuration.GetConnectionString("DatabaseConnection")
 ));
@@ -21,6 +19,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+builder.Services.AddScoped<IPasswordStrengthValidatorService, PasswordStrengthValidatorService>();
 
 var jwtConfig = builder.Configuration.GetSection("JwtConfig");
 
@@ -94,6 +93,8 @@ builder.Services.AddCors(options =>
         builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
     );
 });
+
+var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();

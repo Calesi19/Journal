@@ -20,7 +20,7 @@ public class TokenService : ITokenService
 
     public TokenService(IConfiguration config)
     {
-        _key = new(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+        _key = new(Encoding.UTF8.GetBytes(config["JwtConfig:SecretKey"]));
         _tokenHandler = new();
     }
 
