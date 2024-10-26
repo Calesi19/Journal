@@ -26,7 +26,7 @@ jobs:
 
       - name: Create appsettings.json from Base64 secret
         run: |
-          echo "${{ secrets.APPSETTINGS_JSON_BASE64 }}" | base64 --decode > backend/JournalApi/appsettings.json
+          echo "${{ secrets.APPSETTINGS_JSON }}" | base64 --decode > backend/JournalApi/appsettings.json
 
       - name: Show the list of files in the repo
         run: ls -R
