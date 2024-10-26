@@ -1,5 +1,7 @@
 namespace JournalApi.DTOs;
 
-public class ApiResponse<T> {
-  public T Response { get; set; } = default!;
+public class ApiResponse<T>
+{
+    public T Response { get; set; } = default!;
+    public string Message { get; set; } = string.Empty;
 }
