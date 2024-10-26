@@ -81,8 +81,6 @@ public class TokenService : ITokenService {
       var userIdClaim =
           jwtToken.Claims.FirstOrDefault(claim => claim.Type == "userId");
 
-      Console.WriteLine($"userIdClaim: {userIdClaim.Value.ToString()}");
-      Console.WriteLine($"user.Id: {user.Id.ToString()}");
       if (userIdClaim != null && userIdClaim.Value == user.Id.ToString()) {
         return true;
       }

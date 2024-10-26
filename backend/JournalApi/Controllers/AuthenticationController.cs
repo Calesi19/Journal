@@ -59,12 +59,10 @@ public class AuthenticationController : ControllerBase {
     var user = await _userRepository.FindByIdAsync(userId);
 
     if (user == null) {
-      Console.WriteLine("User is null");
       return Unauthorized();
     }
 
     if (!_tokenService.VerifyRefreshToken(user, RefreshToken)) {
-      Console.WriteLine("Refresh token is invalid");
       return Unauthorized();
     }
 
