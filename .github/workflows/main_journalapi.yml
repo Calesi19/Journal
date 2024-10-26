@@ -22,7 +22,7 @@ jobs:
           dotnet-version: "8.x"
 
       - name: Change directory
-        run: cd backend/
+        run: cd backend
 
       - name: Show the list of files in the repo
         run: ls
