@@ -24,6 +24,9 @@ jobs:
       - name: Change directory
         run: cd backend/
 
+      - name: Show the list of files in the repo
+        run: ls -R
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
