@@ -25,7 +25,7 @@ jobs:
         run: cd backend/
 
       - name: Show the list of files in the repo
-        run: ls -R
+        run: ls
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
