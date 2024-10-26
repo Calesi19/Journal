@@ -18,6 +18,9 @@ jobs:
         with:
           dotnet-version: "8.x"
 
+      - name: Print the current directory
+        run: pwd
+
       - name: Show the list of files in the repo
         run: ls -R
 
