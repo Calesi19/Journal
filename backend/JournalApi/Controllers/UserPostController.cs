@@ -114,7 +114,7 @@ public class UserPostController : ControllerBase
 
         if (post.UserId != userId)
         {
-            return Unauthorized();
+            return Ok(new { PostUserId = post.UserId, UserId = userId });
         }
 
         var updatedPost = new Post

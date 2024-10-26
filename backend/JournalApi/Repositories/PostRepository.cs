@@ -24,13 +24,27 @@ public class PostRepository : IPostRepository
 
     public async Task<List<Post>> FindByUserIdAsync(Guid userId)
     {
-        var sql = "SELECT * FROM posts WHERE user_id = @UserId";
+        var sql =
+            @"SELECT 
+            id AS Id,
+            content AS Content,
+            date_created AS DateCreated,
+            date_updated AS DateUpdated,
+            user_id AS UserId
+            FROM posts WHERE user_id = @UserId";
         return (await _db.QueryAsync<Post>(sql, new { UserId = userId })).ToList();
     }
 
     public async Task<Post> FindByIdAsync(Guid id)
     {
-        var sql = "SELECT * FROM posts WHERE id = @Id";
+        var sql =
+            @"SELECT
+            id AS Id,
+            content AS Content,
+            date_created AS DateCreated,
+            date_updated AS DateUpdated,
+            user_id AS UserId
+            FROM posts WHERE id = @Id";
         return await _db.QueryFirstOrDefaultAsync<Post>(sql, new { Id = id });
     }
 
@@ -47,9 +61,7 @@ public class PostRepository : IPostRepository
     public async Task<Post> UpdateAsync(Post updatedPost)
     {
         var sql =
-            "UPDATE posts SET email = @Email, password = @Password, "
-            + "is_email_confirmed = @IsEmailConfirmed "
-            + "WHERE id = @Id";
+            "UPDATE posts SET content = @Content, date_updated = " + "@DateUpdated WHERE id = @Id";
         await _db.ExecuteAsync(sql, updatedPost);
         return updatedPost;
     }
