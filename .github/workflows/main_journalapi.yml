@@ -21,17 +21,11 @@ jobs:
         with:
           dotnet-version: "8.x"
 
-      - name: Change directory
-        run: cd backend
-
-      - name: Show the list of files in the repo
-        run: ls
-
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build backend/JournalApi/JournalApi.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish backend/JournalApi/JournalApi.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
