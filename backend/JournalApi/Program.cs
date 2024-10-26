@@ -11,10 +11,12 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add Database
 builder.Services.AddTransient<IDbConnection>(x => new NpgsqlConnection(
     builder.Configuration.GetConnectionString("DatabaseConnection")
 ));
 
+// Register services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -22,6 +24,7 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<IPasswordStrengthValidatorService, PasswordStrengthValidatorService>();
 
+// Setup JWT Authentication Configuration
 var jwtConfig = builder.Configuration.GetSection("JwtConfig");
 
 builder
@@ -65,7 +68,7 @@ builder
 
             OnChallenge = context =>
             {
-                context.HandleResponse(); // Skip the default response
+                context.HandleResponse();
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 context.Response.ContentType = "application/json";
 
@@ -82,11 +85,9 @@ builder
     });
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
 // Add CORS services and allow all origins, methods, and headers
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
@@ -97,15 +98,13 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Configure pipeline
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();
 app.UseRouting();
-
-// Use CORS policy
 app.UseCors("AllowAll");
-
 app.MapControllers();
 
 app.Run();
