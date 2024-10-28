@@ -8,4 +8,22 @@ const axiosInstance = axios.create({
   },
 });
 
+// Add a request interceptor to include the access token
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // Get the access token from local storage
+    const accessToken = localStorage.getItem("accessToken");
+
+    // If the access token exists, include it in the Authorization header
+    if (accessToken) {
+      config.headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export default axiosInstance;

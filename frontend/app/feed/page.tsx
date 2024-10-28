@@ -8,81 +8,138 @@ import {
   CardBody,
   Textarea,
   Button,
+  Skeleton,
 } from "@nextui-org/react";
 import { FaSearch } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../../utils/axiosInstance";
 
-// import { TabsFAQ } from "./faq";
-// import { BouncyCardsFeatures } from "./contact";
+export default function FeedPage(): React.JSX.Element {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-// import AccordionSolutions from "./about";
-import React from "react";
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const response = await axiosInstance.get("/accounts/posts");
+        const fetchedPosts = response.data.response.posts;
+        setPosts(fetchedPosts);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-export default function Home(): React.JSX.Element {
+    fetchPosts();
+  }, []);
+
   return (
-    <section className="flex container w-full h-full overflow-hidden pt-16 gap-16 ">
+    <section className="flex container w-full h-full overflow-hidden pt-16 gap-16">
       <div className="w-1/3 hidden md:flex">
         <Menu />
       </div>
       <div className="md:w-2/3 overflow-scroll hide-scrollbar">
         <NewPost />
-        <OldPost />
-        <OldPost />
-        <OldPost />
-        <OldPost />
-        <OldPost />
-        <OldPost />
-        <OldPost />
-        <OldPost />
+        {loading ? (
+          <>
+            <PostSkeleton />
+            <PostSkeleton />
+            <PostSkeleton />
+          </>
+        ) : (
+          posts.map((post) => (
+            <Post
+              key={post.id}
+              content={post.content}
+              date={new Date(post.dateCreated).toLocaleDateString()}
+            />
+          ))
+        )}
       </div>
     </section>
   );
 }
 
 function NewPost(): React.JSX.Element {
-  const [selectedKeys, setSelectedKeys] = React.useState(new Set(["text"]));
+  const [content, setContent] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
-  const selectedValue = React.useMemo(
-    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
-    [selectedKeys]
-  );
+  const handlePost = async () => {
+    if (!content.trim()) {
+      alert("Post content cannot be empty.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await axiosInstance.post("/accounts/posts", {
+        request: {
+          content: content,
+        },
+      });
+
+      // Clear the input field after successful post
+      setContent("");
+      alert("Post created successfully!");
+    } catch (error) {
+      console.error("Error creating post:", error);
+      alert("Failed to create post.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <section className="flex flex-col gap-2 ">
-      <Textarea minRows={10} />
+    <section className="flex flex-col gap-2">
+      <Textarea
+        minRows={2}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder="What's on your mind?"
+      />
       <div className="flex justify-between">
         <div className="flex gap-2"></div>
-        <Button>Post</Button>
+        <Button onClick={handlePost} isLoading={loading}>
+          Post
+        </Button>
       </div>
     </section>
   );
 }
 
-function OldPost(): React.JSX.Element {
+function Post({
+  content,
+  date,
+}: {
+  content: string;
+  date: string;
+}): React.JSX.Element {
   return (
     <div className="my-10 group">
-      <Card className="">
+      <Card>
         <CardHeader className="pb-0 pt-2 flex-col items-start">
           <p className="text-tiny text-default-500 uppercase font-bold">
-            march 19, 2024
+            {date}
           </p>
         </CardHeader>
-        <CardBody className="overflow-visible py-2">
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book. It has survived not only
-          five centuries, but also the leap into electronic typesetting,
-          remaining essentially unchanged. It was popularised in the 1960s with
-          the release of Letraset sheets containing Lorem Ipsum passages, and
-          more recently with desktop publishing software like Aldus PageMaker
-          including versions of Lorem Ipsum.
+        <CardBody
+          className="overflow-visible py-3"
+          style={{ whiteSpace: "pre-wrap" }}
+        >
+          {content}
         </CardBody>
       </Card>
-      <div className=" text-transparent group-hover:text-white flex flex-row-reverse">
+      <div className="text-transparent group-hover:text-white flex flex-row-reverse">
         <a href="#">edit</a>
       </div>
     </div>
   );
+}
+
+function PostSkeleton(): React.JSX.Element {
+  return <Skeleton className="my-10 h-[200px] w-full rounded-xl" />;
 }
 
 function Menu(): React.JSX.Element {
