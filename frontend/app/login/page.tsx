@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { Tabs, Tab, Card, CardBody, Input, Button } from "@nextui-org/react";
-import { signIn, signUp } from "../../utils/auth"; // Import Firebase Auth functions
+import axiosInstance from "../../utils/axiosInstance"; // Import Axios instance
+import { signUp } from "../../utils/auth"; // Keep signUp function if needed
 
 export default function LoginPage(): React.JSX.Element {
   return (
@@ -20,7 +21,21 @@ function Login(): React.JSX.Element {
   const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      await signIn(email, password);
+      const response = await axiosInstance.post("/login", {
+        request: {
+          email: email,
+          password: password,
+        },
+      });
+
+      const { accessToken, refreshToken } = response.data.response;
+      console.log("Access Token:", accessToken);
+      console.log("Refresh Token:", refreshToken);
+
+      // Store tokens in local storage or context, then redirect if needed
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
       // Redirect to dashboard or home page
     } catch (error) {
       console.error("Error logging in:", (error as Error).message);
