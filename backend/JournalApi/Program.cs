@@ -100,11 +100,10 @@ var app = builder.Build();
 
 // Configure pipeline
 app.UseRouting();
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();
-app.UseRouting();
-app.UseCors("AllowAll");
 app.MapControllers();
 
 app.Run();
