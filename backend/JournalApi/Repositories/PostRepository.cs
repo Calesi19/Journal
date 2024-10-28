@@ -33,7 +33,31 @@ public class PostRepository : IPostRepository
             date_updated AS DateUpdated,
             user_id AS UserId
             FROM posts WHERE user_id = @UserId";
-        return (await _db.QueryAsync<Post>(sql, new { UserId = userId })).ToList();
+
+        if (parameters.SearchText != null)
+        {
+            sql += " AND content ILIKE @SearchText";
+        }
+
+        sql += " ORDER BY date_created DESC";
+
+        if (parameters.PageNumber != null && parameters.PageSize != null)
+        {
+            sql += " OFFSET @Offset LIMIT @PageSize";
+        }
+
+        return (
+            await _db.QueryAsync<Post>(
+                sql,
+                new
+                {
+                    UserId = userId,
+                    SearchText = $"%{parameters.SearchText}%",
+                    Offset = (parameters.PageNumber - 1) * parameters.PageSize,
+                    PageSize = parameters.PageSize,
+                }
+            )
+        ).ToList();
     }
 
     public async Task<Post> FindByIdAsync(Guid id)
