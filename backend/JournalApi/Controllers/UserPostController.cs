@@ -23,12 +23,12 @@ public class UserPostController : ControllerBase
     [HttpGet("accounts/posts")]
     public async Task<IActionResult> GetPosts(
         [FromHeader] string Authorization,
-        [FromQuery] GetPostsRequest request
+        [FromQuery] QueryParameters parameters
     )
     {
         var userId = _tokenService.GetUserIdFromToken(Authorization);
 
-        var posts = await _postRepository.FindByUserIdAsync(userId);
+        var posts = await _postRepository.FindByUserIdAsync(userId, parameters);
 
         var response = new ApiResponse<GetPostsResponse>
         {

@@ -1,12 +1,13 @@
 using System.Data;
 using Dapper;
+using JournalApi.DTOs;
 using JournalApi.Models;
 
 namespace JournalApi.Repositories;
 
 public interface IPostRepository
 {
-    Task<List<Post>> FindByUserIdAsync(Guid userId);
+    Task<List<Post>> FindByUserIdAsync(Guid userId, QueryParameters parameters);
     Task<Post> FindByIdAsync(Guid id);
     Task<Post> AddAsync(Post newPost);
     Task<Post> UpdateAsync(Post updatedPost);
@@ -22,7 +23,7 @@ public class PostRepository : IPostRepository
         _db = db;
     }
 
-    public async Task<List<Post>> FindByUserIdAsync(Guid userId)
+    public async Task<List<Post>> FindByUserIdAsync(Guid userId, QueryParameters parameters)
     {
         var sql =
             @"SELECT 
