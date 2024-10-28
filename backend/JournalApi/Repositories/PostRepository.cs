@@ -39,7 +39,7 @@ public class PostRepository : IPostRepository
             sql += " AND content ILIKE @SearchText";
         }
 
-        sql += " ORDER BY date_created ASC";
+        sql += " ORDER BY date_created DESC";
 
         if (parameters.PageNumber != null && parameters.PageSize != null)
         {
