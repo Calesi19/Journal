@@ -1,5 +1,0 @@
-{
-  "imports": {
-    "@miyauci/react-router": "jsr:@miyauci/react-router@^1.2.0"
-  }
-}
