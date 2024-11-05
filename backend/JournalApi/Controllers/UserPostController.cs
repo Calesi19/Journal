@@ -35,7 +35,12 @@ public class UserPostController : ControllerBase
         var posts = await _postRepository.FindByUserIdAsync(userId, parameters);
 
         var totalCount = await _postRepository.GetTotalPostCountAsync(userId, parameters);
-        var pagesLeft = Math.Max(totalCount - parameters.PageNumber.Value, 0);
+
+        // Calculate total pages
+        var totalPages = (int)Math.Ceiling(totalCount / (double)parameters.PageSize.Value);
+
+        // Calculate pages left
+        var pagesLeft = Math.Max(totalPages - parameters.PageNumber.Value, 0);
 
         var response = new ApiResponse<GetPostsResponse>
         {
