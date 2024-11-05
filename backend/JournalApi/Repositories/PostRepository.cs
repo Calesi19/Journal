@@ -39,6 +39,16 @@ public class PostRepository : IPostRepository
             sql += " AND content ILIKE @SearchText";
         }
 
+        if (parameters.DateFrom != null)
+        {
+            sql += " AND date_created >= @DateFrom";
+        }
+
+        if (parameters.DateTo != null)
+        {
+            sql += " AND date_created <= @DateTo";
+        }
+
         sql += " ORDER BY date_created DESC";
 
         if (parameters.PageNumber != null && parameters.PageSize != null)
