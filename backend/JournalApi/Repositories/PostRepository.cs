@@ -8,6 +8,7 @@ namespace JournalApi.Repositories;
 public interface IPostRepository
 {
     Task<List<Post>> FindByUserIdAsync(Guid userId, QueryParameters parameters);
+    Task<int> GetTotalPostCountAsync(Guid userId, QueryParameters parameters);
     Task<Post> FindByIdAsync(Guid id);
     Task<Post> AddAsync(Post newPost);
     Task<Post> UpdateAsync(Post updatedPost);
@@ -26,32 +27,34 @@ public class PostRepository : IPostRepository
     public async Task<List<Post>> FindByUserIdAsync(Guid userId, QueryParameters parameters)
     {
         var sql =
-            @"SELECT 
+            @"
+        SELECT 
             id AS Id,
             content AS Content,
             date_created AS DateCreated,
             date_updated AS DateUpdated,
             user_id AS UserId
-            FROM posts WHERE user_id = @UserId";
+        FROM posts 
+        WHERE user_id = @UserId";
 
-        if (parameters.SearchText != null)
+        if (!string.IsNullOrEmpty(parameters.SearchText))
         {
             sql += " AND content ILIKE @SearchText";
         }
 
-        if (parameters.DateFrom != null)
+        if (parameters.DateFrom.HasValue)
         {
             sql += " AND date_created >= @DateFrom";
         }
 
-        if (parameters.DateTo != null)
+        if (parameters.DateTo.HasValue)
         {
             sql += " AND date_created <= @DateTo";
         }
 
         sql += " ORDER BY date_created DESC";
 
-        if (parameters.PageNumber != null && parameters.PageSize != null)
+        if (parameters.PageNumber.HasValue && parameters.PageSize.HasValue)
         {
             sql += " OFFSET @Offset LIMIT @PageSize";
         }
@@ -68,6 +71,31 @@ public class PostRepository : IPostRepository
                 }
             )
         ).ToList();
+    }
+
+    public async Task<int> GetTotalPostCountAsync(Guid userId, QueryParameters parameters)
+    {
+        var sql = "SELECT COUNT(*) FROM posts WHERE user_id = @UserId";
+
+        if (!string.IsNullOrEmpty(parameters.SearchText))
+        {
+            sql += " AND content ILIKE @SearchText";
+        }
+
+        if (parameters.DateFrom.HasValue)
+        {
+            sql += " AND date_created >= @DateFrom";
+        }
+
+        if (parameters.DateTo.HasValue)
+        {
+            sql += " AND date_created <= @DateTo";
+        }
+
+        return await _db.ExecuteScalarAsync<int>(
+            sql,
+            new { UserId = userId, SearchText = $"%{parameters.SearchText}%" }
+        );
     }
 
     public async Task<Post> FindByIdAsync(Guid id)

@@ -26,13 +26,25 @@ public class UserPostController : ControllerBase
         [FromQuery] QueryParameters parameters
     )
     {
+        // Set default values if not provided
+        parameters.PageNumber ??= 1;
+        parameters.PageSize ??= 20;
+
         var userId = _tokenService.GetUserIdFromToken(Authorization);
 
         var posts = await _postRepository.FindByUserIdAsync(userId, parameters);
 
+        var totalCount = await _postRepository.GetTotalPostCountAsync(userId, parameters);
+
         var response = new ApiResponse<GetPostsResponse>
         {
-            Response = new GetPostsResponse() { Posts = posts },
+            Response = new GetPostsResponse()
+            {
+                Posts = posts,
+                PageNumber = parameters.PageNumber.Value,
+                PageSize = parameters.PageSize.Value,
+                TotalCount = totalCount,
+            },
         };
 
         return Ok(response);
