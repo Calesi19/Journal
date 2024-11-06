@@ -18,6 +18,7 @@ function Login(): React.JSX.Element {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+
   const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
@@ -37,6 +38,8 @@ function Login(): React.JSX.Element {
       localStorage.setItem("refreshToken", refreshToken);
 
       // Redirect to dashboard or home page
+      window.location.href = "/feed";
+
     } catch (error) {
       console.error("Error logging in:", (error as Error).message);
     }

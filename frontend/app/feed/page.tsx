@@ -117,7 +117,7 @@ function Post({
   date: string;
 }): React.JSX.Element {
   return (
-    <div className="my-10 group">
+    <div className="my-10 group ">
       <Card>
         <CardHeader className="pb-0 pt-2 flex-col items-start">
           <p className="text-tiny text-default-500 uppercase font-bold">
@@ -131,7 +131,7 @@ function Post({
           {content}
         </CardBody>
       </Card>
-      <div className="text-transparent group-hover:text-white flex flex-row-reverse">
+      <div className="text-transparent group-hover:text-white flex flex-row-reverse transition ease-in-out duration-300 ">
         <a href="#">edit</a>
       </div>
     </div>
