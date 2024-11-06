@@ -14,8 +14,14 @@ import { FaSearch } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 
+type PostType = {
+  id: number;
+  content: string;
+  dateCreated: string;
+};
+
 export default function FeedPage(): React.JSX.Element {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<PostType>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
