@@ -21,7 +21,7 @@ type PostType = {
 };
 
 export default function FeedPage(): React.JSX.Element {
-  const [posts, setPosts] = useState<PostType>([]);
+  const [posts, setPosts] = useState<PostType[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function FeedPage(): React.JSX.Element {
             <PostSkeleton />
           </>
         ) : (
-          posts.map((post) => (
+          posts.map((post: PostType) => (
             <Post
               key={post.id}
               content={post.content}
