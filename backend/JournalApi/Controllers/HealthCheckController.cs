@@ -6,8 +6,5 @@ namespace JournalApi.Controllers;
 public class HealthController : ControllerBase
 {
     [HttpGet("health")]
-    public async Task<IActionResult> HealthCheck()
-    {
-        return Ok("I'm okay. :)");
-    }
+    public async Task<IActionResult> HealthCheck() { return Ok("I'm okay. :)"); }
 }

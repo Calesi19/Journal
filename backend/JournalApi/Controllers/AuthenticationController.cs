@@ -13,14 +13,13 @@ public class AuthenticationController : ControllerBase
     private readonly ITokenService _tokenService;
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasherService _passwordHasherService;
-    private readonly IPasswordStrengthValidatorService _passwordStrengthValidatorService;
+    private readonly IPasswordStrengthValidatorService
+        _passwordStrengthValidatorService;
 
     public AuthenticationController(
-        ITokenService tokenService,
-        IUserRepository userRepository,
+        ITokenService tokenService, IUserRepository userRepository,
         IPasswordHasherService passwordHasherService,
-        IPasswordStrengthValidatorService passwordStrengthValidatorService
-    )
+        IPasswordStrengthValidatorService passwordStrengthValidatorService)
     {
         _tokenService = tokenService;
         _userRepository = userRepository;
@@ -30,7 +29,8 @@ public class AuthenticationController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] ApiRequest<LoginRequest> request)
+    public async Task<IActionResult>
+    Login([FromBody] ApiRequest<LoginRequest> request)
     {
         var user = await _userRepository.FindByEmailAsync(request.Request.Email);
 
@@ -39,7 +39,8 @@ public class AuthenticationController : ControllerBase
             return Unauthorized();
         }
 
-        if (!_passwordHasherService.VerifyPasswordMatch(request.Request.Password, user.Password))
+        if (!_passwordHasherService.VerifyPasswordMatch(request.Request.Password,
+                                                        user.Password))
         {
             return Unauthorized();
         }
@@ -49,7 +50,11 @@ public class AuthenticationController : ControllerBase
 
         var response = new ApiResponse<LoginResponse>
         {
-            Response = new LoginResponse() { AccessToken = token, RefreshToken = refreshToken },
+            Response = new LoginResponse()
+            {
+                AccessToken = token,
+                RefreshToken = refreshToken
+            },
         };
 
         return Ok(response);
@@ -57,10 +62,8 @@ public class AuthenticationController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("refresh-token")]
-    public async Task<IActionResult> Refresh(
-        [FromHeader] string Authorization,
-        [FromHeader] string RefreshToken
-    )
+    public async Task<IActionResult> Refresh([FromHeader] string Authorization,
+                                             [FromHeader] string RefreshToken)
     {
         var userId = _tokenService.GetUserIdFromToken(Authorization);
         var user = await _userRepository.FindByIdAsync(userId);
@@ -80,7 +83,11 @@ public class AuthenticationController : ControllerBase
 
         var response = new ApiResponse<LoginResponse>
         {
-            Response = new LoginResponse() { AccessToken = token, RefreshToken = refreshToken },
+            Response = new LoginResponse()
+            {
+                AccessToken = token,
+                RefreshToken = refreshToken
+            },
         };
 
         return Ok(response);
@@ -88,9 +95,8 @@ public class AuthenticationController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("accounts")]
-    public async Task<IActionResult> CreateAccount(
-        [FromBody] ApiRequest<CreateAccountRequest> request
-    )
+    public async Task<IActionResult>
+    CreateAccount([FromBody] ApiRequest<CreateAccountRequest> request)
     {
         // Check if the user already exists
         var user = await _userRepository.FindByEmailAsync(request.Request.Email);
@@ -101,28 +107,36 @@ public class AuthenticationController : ControllerBase
         }
 
         // Validate the password is strong enough
-        if (!_passwordStrengthValidatorService.IsPasswordStrong(request.Request.Password))
+        if (!_passwordStrengthValidatorService.IsPasswordStrong(
+                request.Request.Password))
         {
             return BadRequest();
         }
 
         // Hash the password
-        var hashedPassword = _passwordHasherService.HashPassword(request.Request.Password);
+        var hashedPassword =
+            _passwordHasherService.HashPassword(request.Request.Password);
 
-        var newUser = new User { Email = request.Request.Email, Password = hashedPassword };
+        var newUser =
+            new User { Email = request.Request.Email, Password = hashedPassword };
 
         await _userRepository.AddAsync(newUser);
 
         var response = new ApiResponse<CreateAccountResponse>
         {
-            Response = new CreateAccountResponse() { IsSuccess = true, Email = newUser.Email },
+            Response = new CreateAccountResponse()
+            {
+                IsSuccess = true,
+                Email = newUser.Email
+            },
         };
 
         return Created("", response);
     }
 
     [HttpDelete("accounts")]
-    public async Task<IActionResult> CreateAccount([FromHeader] string Authorization)
+    public async Task<IActionResult>
+    CreateAccount([FromHeader] string Authorization)
     {
         var userId = _tokenService.GetUserIdFromToken(Authorization);
 
