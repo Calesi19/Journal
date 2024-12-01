@@ -7,6 +7,7 @@ A place to jot down thoughts. You can categorize them and search them.
 # Built With
 
 - .NET Core 8 (C#) - Backend APIs
+- Go - Backend APIs
 - NextJs (TypeScript)- Frontend
 - PostgreSQL - Database
 - Docker - Containerization
