@@ -11,6 +11,9 @@ A place to jot down thoughts. You can categorize them and search them.
 - NextJs (TypeScript)- Frontend
 - PostgreSQL - Database
 - Docker - Containerization
+- Tailwind CSS - Styling
+- NextUi - UI Components
+- JWT - Authentication
 
 # Installation
 
