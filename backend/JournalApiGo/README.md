@@ -9,4 +9,24 @@ Allows users to create, read, update and delete journal entries and accounts. Me
 - PostgreSQL : database to store journal entries. 
 - JWT: for authentication.
 
+## Endpoints
+
+### Create a new account
+```
+POST /accounts
+```
+Request body:
+```
+{
+"request":{
+    "username": "username",
+    "password": "password"
+  }
+}
+```
+
+
+
+
+
 
