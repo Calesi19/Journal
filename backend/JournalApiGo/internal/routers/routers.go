@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"journal-api/internal/database"
 	"journal-api/internal/handlers/accounts"
 	"journal-api/internal/handlers/auth"
 	"journal-api/internal/handlers/posts"
@@ -14,7 +15,7 @@ func RegisterRoutes(e *echo.Echo) {
 	e.POST("refresh-token", auth.RefreshTokenHandler)
 
 	// account routes
-	e.POST("/accounts", accounts.CreateAccountHandler)
+	e.POST("/accounts", accounts.CreateAccountHandler(database.DB))
 	e.DELETE("/accounts", accounts.DeleteAccountHandler)
 
 	// posts routes
