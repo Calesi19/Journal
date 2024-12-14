@@ -3,11 +3,13 @@ package accounts
 import (
 	"database/sql"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/x/crypto/bcrypt"
 )
 
 type CreateAccountRequest struct {
-	Username string `json:"username"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
@@ -30,12 +32,12 @@ func CreateAccountHandler(db *sql.DB) echo.HandlerFunc {
 		}
 
 		var count int
-		err = db.QueryRow("SELECT COUNT(*) FROM accounts WHERE username = $1", req.Username).
+		err = db.QueryRow("SELECT COUNT(*) FROM users WHERE email = $1", req.Email).
 			Scan(&count)
 		if err != nil {
 			res := CreateAccountResponse{
 				IsSuccess: false,
-				Message:   "Unable to create account.",
+				Message:   "Error occured while checking if account exists.",
 			}
 			return c.JSON(500, res)
 		}
@@ -43,20 +45,30 @@ func CreateAccountHandler(db *sql.DB) echo.HandlerFunc {
 		if count != 0 {
 			response := CreateAccountResponse{
 				IsSuccess: false,
-				Message:   "Username already exists.",
+				Message:   "Account with that email already exists.",
 			}
 			return c.JSON(409, response)
 		}
 
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			response := CreateAccountResponse{
+				IsSuccess: false,
+				Message:   "Error occured while hashing password.",
+			}
+			return c.JSON(500, response)
+		}
+
 		_, err = db.Exec(
-			"INSERT INTO accounts (username, password) VALUES ($1, $2)",
-			req.Username,
-			req.Password,
+			"INSERT INTO users (id, email, password) VALUES ($1, $2, $3)",
+			uuid.New().String(),
+			req.Email,
+			hashedPassword,
 		)
 		if err != nil {
 			res := CreateAccountResponse{
 				IsSuccess: false,
-				Message:   "Unable to create account.",
+				Message:   "Error occured while creating account.",
 			}
 			return c.JSON(500, res)
 		}
