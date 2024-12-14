@@ -53,8 +53,7 @@ export default function Page() {
               journaling made simple.
             </h1>
             <p className="mt-8 text-pretty text-lg font-medium text-gray-500 sm:text-xl/8">
-              A secure journaling app that allows users to create, edit, and organize private entries with ease. It offers personalized prompts and summaries to enhance the writing experience.
-            </p>
+              A secure platform for creating, organizing, and enhancing personal entries.            </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
 
               <a href="/create-account">
