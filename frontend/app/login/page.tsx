@@ -32,6 +32,53 @@ function Login(): React.JSX.Element {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    const checkTokens = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (!refreshToken) {
+        // No refreshToken, clear localStorage and return
+        localStorage.clear();
+        return;
+      }
+
+      try {
+        if (accessToken) {
+          // Validate accessToken
+          const accessTokenResponse = await axiosInstance.post("/validate-token", {
+            token: accessToken,
+          });
+
+          if (accessTokenResponse.data.valid) {
+            // Redirect to /feed if accessToken is valid
+            window.location.href = "/feed";
+            return;
+          }
+        }
+
+        // If accessToken is invalid, try refreshing it
+        const refreshResponse = await axiosInstance.post("/refresh-token", {
+          refreshToken,
+        });
+
+        if (refreshResponse.data.success) {
+          // Store the new accessToken and redirect
+          localStorage.setItem("accessToken", refreshResponse.data.accessToken);
+          window.location.href = "/feed";
+          return;
+        } else {
+          // Refresh token is invalid, clear storage
+          localStorage.clear();
+        }
+      } catch (error) {
+        console.error("Token validation/refresh error:", error);
+        localStorage.clear();
+      }
+    };
+
+    checkTokens();
+  }, []);
 
   const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -53,7 +100,6 @@ function Login(): React.JSX.Element {
 
       // Redirect to dashboard or home page
       window.location.href = "/feed";
-
     } catch (error) {
       console.error("Error logging in:", (error as Error).message);
     }
@@ -166,3 +212,4 @@ function Login(): React.JSX.Element {
     </div>
   );
 }
+
