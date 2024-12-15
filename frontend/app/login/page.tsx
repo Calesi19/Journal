@@ -23,6 +23,7 @@ function Login(): React.JSX.Element {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [selectedTab, setSelectedTab] = useState<string>("login"); // Default to "Log In"
+  const [isSubmitting, setIsSubmitting] = useState(false); // State for tracking button loading state
   const searchParams = useSearchParams(); // Get query parameters
 
   useEffect(() => {
@@ -32,56 +33,9 @@ function Login(): React.JSX.Element {
     }
   }, [searchParams]);
 
-  useEffect(() => {
-    const checkTokens = async () => {
-      const accessToken = localStorage.getItem("accessToken");
-      const refreshToken = localStorage.getItem("refreshToken");
-
-      if (!refreshToken) {
-        // No refreshToken, clear localStorage and return
-        localStorage.clear();
-        return;
-      }
-
-      try {
-        if (accessToken) {
-          // Validate accessToken
-          const accessTokenResponse = await axiosInstance.post("/validate-token", {
-            token: accessToken,
-          });
-
-          if (accessTokenResponse.data.valid) {
-            // Redirect to /feed if accessToken is valid
-            window.location.href = "/feed";
-            return;
-          }
-        }
-
-        // If accessToken is invalid, try refreshing it
-        const refreshResponse = await axiosInstance.post("/refresh-token", {
-          refreshToken,
-        });
-
-        if (refreshResponse.data.success) {
-          // Store the new accessToken and redirect
-          localStorage.setItem("accessToken", refreshResponse.data.accessToken);
-          window.location.href = "/feed";
-          return;
-        } else {
-          // Refresh token is invalid, clear storage
-          localStorage.clear();
-        }
-      } catch (error) {
-        console.error("Token validation/refresh error:", error);
-        localStorage.clear();
-      }
-    };
-
-    checkTokens();
-  }, []);
-
   const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsSubmitting(true); // Start spinner
     try {
       const response = await axiosInstance.post("/login", {
         request: {
@@ -102,6 +56,8 @@ function Login(): React.JSX.Element {
       window.location.href = "/feed";
     } catch (error) {
       console.error("Error logging in:", (error as Error).message);
+    } finally {
+      setIsSubmitting(false); // Stop spinner
     }
   };
 
@@ -113,17 +69,22 @@ function Login(): React.JSX.Element {
       alert("Passwords do not match");
       return;
     }
+    setIsSubmitting(true); // Start spinner
     try {
       await signUp(email, password);
       // Redirect to dashboard or home page
     } catch (error) {
       console.error("Error creating account:", (error as Error).message);
+    } finally {
+      setIsSubmitting(false); // Stop spinner
     }
   };
 
   return (
     <div className="flex w-full max-w-[400px] flex-col">
-      <h1 className="text-center py-8 font-black text-8xl"><a href="/">journal</a></h1>
+      <h1 className="text-center py-8 font-black text-8xl">
+        <a href="/">journal</a>
+      </h1>
       <Card>
         <CardBody>
           <Tabs
@@ -156,6 +117,7 @@ function Login(): React.JSX.Element {
                   className="mt-4"
                   color="primary"
                   fullWidth
+                  isLoading={isSubmitting} // Add spinner here
                 >
                   Log In
                 </Button>
@@ -194,6 +156,7 @@ function Login(): React.JSX.Element {
                   className="mt-4"
                   color="primary"
                   fullWidth
+                  isLoading={isSubmitting} // Add spinner here
                 >
                   Create Account
                 </Button>
@@ -212,4 +175,3 @@ function Login(): React.JSX.Element {
     </div>
   );
 }
-
