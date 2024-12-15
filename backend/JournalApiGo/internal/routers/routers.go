@@ -12,11 +12,11 @@ import (
 func RegisterRoutes(e *echo.Echo) {
 	// auth routes
 	e.POST("/login", auth.LoginHandler)
-	e.POST("refresh-token", auth.RefreshTokenHandler)
+	e.POST("/refresh-token", auth.RefreshTokenHandler)
 
 	// account routes
 	e.POST("/accounts", accounts.CreateAccountHandler(database.DB))
-	e.DELETE("/accounts", accounts.DeleteAccountHandler)
+	e.DELETE("/accounts", accounts.DeleteAccountHandler(database.DB))
 
 	// posts routes
 	e.GET("/posts", posts.GetPostsHandler)
