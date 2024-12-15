@@ -45,7 +45,7 @@ export default function FeedPage(): React.JSX.Element {
       <div className="w-1/3 hidden md:flex">
         <Menu />
       </div>
-      <div className="md:w-2/3 overflow-scroll hide-scrollbar">
+      <div className="md:w-2/3 w-full overflow-scroll hide-scrollbar">
         <NewPost />
         {loading ? (
           <>
