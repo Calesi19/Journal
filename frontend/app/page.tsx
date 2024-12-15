@@ -56,7 +56,7 @@ export default function Page() {
               A secure platform for creating, organizing, and enhancing personal entries.            </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
 
-              <a href="/create-account">
+              <a href="/login?tab=create-account">
                 <Button color="primary">
                   Create Account
                 </Button>

@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense, useEffect } from "react";
 import { Tabs, Tab, Card, CardBody, Input, Button } from "@nextui-org/react";
 import axiosInstance from "../../utils/axiosInstance"; // Import Axios instance
 import { signUp } from "../../utils/auth"; // Keep signUp function if needed
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage(): React.JSX.Element {
   return (
@@ -21,6 +22,15 @@ function Login(): React.JSX.Element {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [selectedTab, setSelectedTab] = useState<string>("login"); // Default to "Log In"
+  const searchParams = useSearchParams(); // Get query parameters
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "create-account") {
+      setSelectedTab("create-account");
+    }
+  }, [searchParams]);
 
 
   const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -70,8 +80,13 @@ function Login(): React.JSX.Element {
       <h1 className="text-center py-8 font-black text-8xl"><a href="/">journal</a></h1>
       <Card>
         <CardBody>
-          <Tabs fullWidth aria-label="Dynamic tabs">
-            <Tab title="Log In">
+          <Tabs
+            fullWidth
+            aria-label="Dynamic tabs"
+            selectedKey={selectedTab}
+            onSelectionChange={(key) => setSelectedTab(key as string)}
+          >
+            <Tab title="Log In" key="login">
               <form onSubmit={handleLoginSubmit}>
                 <Input
                   size="sm"
@@ -100,7 +115,7 @@ function Login(): React.JSX.Element {
                 </Button>
               </form>
             </Tab>
-            <Tab title="Create Account">
+            <Tab title="Create Account" key="create-account">
               <form onSubmit={handleCreateAccountSubmit}>
                 <Input
                   size="sm"
