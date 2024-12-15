@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { Tabs, Tab, Card, CardBody, Input, Button } from "@nextui-org/react";
 import axiosInstance from "../../utils/axiosInstance"; // Import Axios instance
 import { signUp } from "../../utils/auth"; // Keep signUp function if needed
@@ -8,7 +8,11 @@ import { signUp } from "../../utils/auth"; // Keep signUp function if needed
 export default function LoginPage(): React.JSX.Element {
   return (
     <section className="flex container justify-center items-center w-full h-full overflow-hidden">
-      <Login />
+      <div className="absolute top-1/4 transform -translate-y-1/4">
+        <Suspense fallback={<div>Loading...</div>}>
+          <Login />
+        </Suspense>
+      </div>
     </section>
   );
 }
@@ -63,7 +67,7 @@ function Login(): React.JSX.Element {
 
   return (
     <div className="flex w-full max-w-[400px] flex-col">
-      <h1 className="text-center py-8 font-black text-8xl">journal</h1>
+      <h1 className="text-center py-8 font-black text-8xl"><a href="/">journal</a></h1>
       <Card>
         <CardBody>
           <Tabs fullWidth aria-label="Dynamic tabs">
