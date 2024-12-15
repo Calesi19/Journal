@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/x/crypto/bcrypt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type CreateAccountRequest struct {
