@@ -2,7 +2,6 @@ package posts
 
 import (
 	"database/sql"
-	"journal-api/internal/database"
 	"net/http"
 	"time"
 
@@ -32,26 +31,39 @@ type QueryParams struct {
 
 func GetPostsHandler(db *sql.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		// Get userId from context
+		userId := c.Get("userId")
+		if userId == nil {
+			return c.String(http.StatusUnauthorized, "User ID not found in context")
+		}
+
+		// Ensure userId is a string
+		userIdStr, ok := userId.(string)
+		if !ok {
+			return c.String(http.StatusInternalServerError, "Invalid user ID format")
+		}
+
 		var params QueryParams
 		if err := c.Bind(&params); err != nil {
 			return c.String(http.StatusBadRequest, "Invalid query parameters.")
 		}
 
-		args := []interface{}{}
-		query := "SELECT id, content, date_created AS dateCreated, date_updated AS dateUpdated, user_id AS userId FROM posts WHERE user_id = ?"
-		args = append(args, params.UserId)
+		args := []interface{}{userIdStr}
+		query := `SELECT id, content, date_created AS dateCreated, date_updated AS dateUpdated, user_id AS userId
+		          FROM posts
+		          WHERE user_id = $1`
 
 		if params.SearchText != "" {
-			query += " AND content ILIKE ?"
+			query += " AND content ILIKE $2"
 			args = append(args, "%"+params.SearchText+"%")
 		}
 
 		if params.DateFrom != "" {
 			dateFrom, err := time.Parse("2006-01-02", params.DateFrom)
 			if err != nil {
-				return c.String(http.StatusBadRequest, "Invalid DateTo format. Use YYYY-MM-DD.")
+				return c.String(http.StatusBadRequest, "Invalid DateFrom format. Use YYYY-MM-DD.")
 			}
-			query += " AND date_created >= ?"
+			query += " AND date_created >= $3"
 			args = append(args, dateFrom)
 		}
 
@@ -60,7 +72,7 @@ func GetPostsHandler(db *sql.DB) echo.HandlerFunc {
 			if err != nil {
 				return c.String(http.StatusBadRequest, "Invalid DateTo format. Use YYYY-MM-DD.")
 			}
-			query += " AND date_created <= ?"
+			query += " AND date_created <= $4"
 			args = append(args, dateTo)
 		}
 
@@ -68,14 +80,14 @@ func GetPostsHandler(db *sql.DB) echo.HandlerFunc {
 
 		if params.PageNumber > 0 && params.PageSize > 0 {
 			offset := (params.PageNumber - 1) * params.PageSize
-			query += " LIMIT ? OFFSET ?"
+			query += " LIMIT $5 OFFSET $6"
 			args = append(args, params.PageSize, offset)
 		}
 
 		// Execute the query
-		rows, err := database.DB.Query(query, args...)
+		rows, err := db.Query(query, args...)
 		if err != nil {
-			return c.String(http.StatusInternalServerError, "Error querying posts.")
+			return c.String(http.StatusInternalServerError, "Error querying posts: "+err.Error())
 		}
 		defer rows.Close()
 

@@ -5,6 +5,7 @@ import (
 	"journal-api/internal/handlers/accounts"
 	"journal-api/internal/handlers/auth"
 	"journal-api/internal/handlers/posts"
+	"journal-api/internal/middleware"
 
 	"github.com/labstack/echo/v4"
 )
@@ -19,10 +20,11 @@ func RegisterRoutes(e *echo.Echo) {
 	e.DELETE("/accounts", accounts.DeleteAccountHandler(database.DB))
 
 	// posts routes
-	e.GET("/posts", posts.GetPostsHandler(database.DB))
-	e.POST("/posts", posts.CreatePostHandler)
-	e.DELETE("/posts/:id", posts.DeletePostHandler)
-	e.PUT("/posts/:id", posts.UpdatePostHandler)
+	postsGroup := e.Group("/posts", middleware.AuthMiddleware)
+	postsGroup.GET("", posts.GetPostsHandler(database.DB))
+	postsGroup.POST("", posts.CreatePostHandler)
+	postsGroup.DELETE("/:id", posts.DeletePostHandler)
+	postsGroup.PUT("/:id", posts.UpdatePostHandler)
 
 	// health check
 	e.GET("/health", func(c echo.Context) error {
