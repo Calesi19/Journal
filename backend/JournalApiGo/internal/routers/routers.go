@@ -19,7 +19,7 @@ func RegisterRoutes(e *echo.Echo) {
 	e.DELETE("/accounts", accounts.DeleteAccountHandler(database.DB))
 
 	// posts routes
-	e.GET("/posts", posts.GetPostsHandler)
+	e.GET("/posts", posts.GetPostsHandler(database.DB))
 	e.POST("/posts", posts.CreatePostHandler)
 	e.DELETE("/posts/:id", posts.DeletePostHandler)
 	e.PUT("/posts/:id", posts.UpdatePostHandler)
