@@ -1,7 +1,5 @@
 package auth
 
-// $2a$10$p.JQ6jmm0RPLB4k6A6Z9UeknfIw.CmnYXIVPeb44v31Xq0402Xm5S
-// AQAAAAIAAYagAAAAEEa//IdGOFGHZqOO43mt2TB99Vuj7uXhRYB5P0pjOY4uy8DfYuaFrSSIlpHW+YT+7Q==
 import (
 	"database/sql"
 	"time"

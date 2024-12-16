@@ -3,6 +3,7 @@ package posts
 import (
 	"journal-api/internal/database"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -14,17 +15,66 @@ type GetPostsResponse struct {
 type Post struct {
 	Id          string `json:"id"`
 	Content     string `json:"content"`
-	DateCreated string `json:"date_created"`
-	DateUpdated string `json:"date_updated"`
-	UserId      string `json:"user_id"`
+	DateCreated string `json:"dateCreated"`
+	DateUpdated string `json:"dateUpdated"`
+	UserId      string `json:"userId"`
+}
+
+type QueryParams struct {
+	UserId     string `query:"userId"`
+	SearchText string `query:"searchText"`
+	DateFrom   string `query:"dateFrom"`
+	DateTo     string `query:"dateTo"`
+	PageNumber int    `query:"pageNumber"`
+	PageSize   int    `query:"pageSize"`
 }
 
 func GetPostsHandler(c echo.Context) error {
-	query := "SELECT id, content, date_created, date_updated, user_id FROM posts"
 
-	rows, err := database.DB.Query(query)
+	var params QueryParams
+	if err := c.Bind(&params); err != nil {
+		return c.String(http.StatusBadRequest, "Invalid query parameters.")
+	}
+
+	args := []interface{}{}
+	query := "SELECT id, content, date_created AS dateCreated, date_updated AS dateUpdated, user_id AS userId FROM posts WHERE user_id = ?"
+	args = append(args, params.UserId)
+
+	if params.SearchText != "" {
+		query += " AND content ILIKE ?"
+		args = append(args, "%"+params.SearchText+"%")
+	}
+
+	if params.DateFrom != "" {
+		dateFrom, err := time.Parse("2006-01-02", params.DateFrom)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "Invalid DateTo format. Use YYYY-MM-DD.")
+		}
+		query += " AND date_created >= ?"
+		args = append(args, dateFrom)
+	}
+
+	if params.DateTo != "" {
+		dateTo, err := time.Parse("2006-01-02", params.DateTo)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "Invalid DateTo format. Use YYYY-MM-DD.")
+		}
+		query += " AND date_created <= ?"
+		args = append(args, dateTo)
+	}
+
+	query += " ORDER BY date_created DESC"
+
+	if params.PageNumber > 0 && params.PageSize > 0 {
+		offset := (params.PageNumber - 1) * params.PageSize
+		query += " LIMIT ? OFFSET ?"
+		args = append(args, params.PageSize, offset)
+	}
+
+	// Execute the query
+	rows, err := database.DB.Query(query, args...)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "Error getting posts.")
+		return c.String(http.StatusInternalServerError, "Error querying posts.")
 	}
 	defer rows.Close()
 
@@ -40,20 +90,20 @@ func GetPostsHandler(c echo.Context) error {
 			&post.UserId,
 		)
 		if err != nil {
-			return c.String(http.StatusInternalServerError, "Error scanning1 posts.")
+			return c.String(http.StatusInternalServerError, "Error scanning posts.")
 		}
 
 		posts = append(posts, post)
 	}
 
 	if err := rows.Err(); err != nil {
-		return c.String(http.StatusInternalServerError, "Error scanning posts.")
+		return c.String(http.StatusInternalServerError, "Error with result set.")
 	}
 
+	// Construct response
 	response := GetPostsResponse{
 		Posts: posts,
 	}
 
-	// return the results
 	return c.JSON(http.StatusOK, response)
 }
