@@ -1,5 +1,7 @@
 package auth
 
+// $2a$10$p.JQ6jmm0RPLB4k6A6Z9UeknfIw.CmnYXIVPeb44v31Xq0402Xm5S
+// AQAAAAIAAYagAAAAEEa//IdGOFGHZqOO43mt2TB99Vuj7uXhRYB5P0pjOY4uy8DfYuaFrSSIlpHW+YT+7Q==
 import (
 	"database/sql"
 	"time"
@@ -43,7 +45,7 @@ func LoginHandler(db *sql.DB) echo.HandlerFunc {
 		err = db.QueryRow("SELECT id, email, password FROM users WHERE email = $1", req.Email).
 			Scan(&user.Id, &user.Email, &user.Password)
 
-		if err != nil && err != sql.ErrNoRows {
+		if err != nil && err == sql.ErrNoRows {
 			return c.JSON(401, map[string]string{
 				"message": "Invalid email or password.",
 			})

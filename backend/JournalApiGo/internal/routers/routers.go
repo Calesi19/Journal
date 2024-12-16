@@ -12,7 +12,7 @@ import (
 func RegisterRoutes(e *echo.Echo) {
 	// auth routes
 	e.POST("/login", auth.LoginHandler(database.DB))
-	e.POST("/refresh-token", auth.RefreshTokenHandler)
+	e.POST("/refresh-token", auth.RefreshTokenHandler())
 
 	// account routes
 	e.POST("/accounts", accounts.CreateAccountHandler(database.DB))
