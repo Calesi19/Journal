@@ -27,23 +27,27 @@ func RefreshTokenHandler() echo.HandlerFunc {
 			})
 		}
 
-		// Decode the refresh token
 		claims := jwt.MapClaims{}
-		_, err = jwt.ParseWithClaims(req.RefreshToken, claims, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.ParseWithClaims(req.RefreshToken, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte(secret), nil
 		})
 
-		if err != nil {
+		if err != nil || !token.Valid {
 			return c.JSON(401, map[string]string{
 				"message": "Invalid refresh token.",
 			})
 		}
 
-		user.Id = claims["id"].(string)
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return c.JSON(401, map[string]string{
+				"message": "Invalid signing method.",
+			})
+		}
+
+		user.Id = claims["userId"].(string)
 		user.Email = claims["email"].(string)
 
 		bearerToken, err := generateBearerToken(user)
-
 		if err != nil {
 			return c.JSON(500, map[string]string{
 				"message": "Error occurred while generating the bearer token.",
@@ -51,14 +55,13 @@ func RefreshTokenHandler() echo.HandlerFunc {
 		}
 
 		refreshToken, err := generateRefreshToken(user)
-
 		if err != nil {
 			return c.JSON(500, map[string]string{
 				"message": "Error occurred while generating the refresh token.",
 			})
 		}
 
-		res := LoginResponse{
+		res := RefreshTokenResponse{
 			IsSuccess:    true,
 			BearerToken:  bearerToken,
 			RefreshToken: refreshToken,
