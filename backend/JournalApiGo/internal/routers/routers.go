@@ -23,7 +23,7 @@ func RegisterRoutes(e *echo.Echo) {
 	postsGroup := e.Group("/posts", middleware.AuthMiddleware)
 	postsGroup.GET("", posts.GetPostsHandler(database.DB))
 	postsGroup.POST("", posts.CreatePostHandler)
-	postsGroup.DELETE("/:id", posts.DeletePostHandler)
+	postsGroup.DELETE("/:id", posts.DeletePostHandler(database.DB))
 	postsGroup.PUT("/:id", posts.UpdatePostHandler)
 
 	// health check
