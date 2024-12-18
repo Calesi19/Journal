@@ -22,9 +22,9 @@ func RegisterRoutes(e *echo.Echo) {
 	// posts routes
 	postsGroup := e.Group("/posts", middleware.AuthMiddleware)
 	postsGroup.GET("", posts.GetPostsHandler(database.DB))
-	postsGroup.POST("", posts.CreatePostHandler)
+	postsGroup.POST("", posts.CreatePostHandler(database.DB))
 	postsGroup.DELETE("/:id", posts.DeletePostHandler(database.DB))
-	postsGroup.PUT("/:id", posts.UpdatePostHandler)
+	postsGroup.PUT("/:id", posts.UpdatePostHandler(database.DB))
 
 	// health check
 	e.GET("/health", func(c echo.Context) error {

@@ -56,7 +56,6 @@ func LoginHandler(db *sql.DB) echo.HandlerFunc {
 		}
 
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
-
 		if err != nil {
 			return c.JSON(401, map[string]string{
 				"message": "Invalid email or password.",
@@ -64,7 +63,6 @@ func LoginHandler(db *sql.DB) echo.HandlerFunc {
 		}
 
 		bearerToken, err := generateBearerToken(user)
-
 		if err != nil {
 			return c.JSON(500, map[string]string{
 				"message": "Error occurred while generating the bearer token.",
@@ -72,7 +70,6 @@ func LoginHandler(db *sql.DB) echo.HandlerFunc {
 		}
 
 		refreshToken, err := generateRefreshToken(user)
-
 		if err != nil {
 			return c.JSON(500, map[string]string{
 				"message": "Error occurred while generating the refresh token.",
@@ -90,7 +87,6 @@ func LoginHandler(db *sql.DB) echo.HandlerFunc {
 }
 
 func generateBearerToken(user User) (string, error) {
-
 	claims := jwt.MapClaims{
 		"userId": user.Id,
 		"email":  user.Email,
@@ -99,7 +95,6 @@ func generateBearerToken(user User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	bearerToken, err := token.SignedString([]byte(secret))
-
 	if err != nil {
 		return "", err
 	}
@@ -108,7 +103,6 @@ func generateBearerToken(user User) (string, error) {
 }
 
 func generateRefreshToken(user User) (string, error) {
-
 	claims := jwt.MapClaims{
 		"userId": user.Id,
 		"email":  user.Email,
@@ -117,7 +111,6 @@ func generateRefreshToken(user User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	refreshToken, err := token.SignedString([]byte(secret))
-
 	if err != nil {
 		return "", err
 	}
