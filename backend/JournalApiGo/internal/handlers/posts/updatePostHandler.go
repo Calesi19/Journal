@@ -22,19 +22,33 @@ func UpdatePostHandler(db *sql.DB) echo.HandlerFunc {
 		// Get userId from context
 		userId := c.Get("userId")
 		if userId == nil {
-			return c.String(http.StatusUnauthorized, "User ID not found in context")
+
+			res := map[string]string{
+				"message": "User ID not found in context",
+			}
+
+			return c.JSON(http.StatusUnauthorized, res)
 		}
 
 		// Ensure userId is a string
 		userIdStr, ok := userId.(string)
 		if !ok {
-			return c.String(http.StatusInternalServerError, "Invalid user ID format")
+
+			res := map[string]string{
+				"message": "Invalid user ID format",
+			}
+
+			return c.JSON(http.StatusInternalServerError, res)
 		}
 
 		// Get the post ID from the URL parameter
 		postId := c.Param("id")
 		if postId == "" {
-			return c.String(http.StatusBadRequest, "Post ID is required")
+			res := map[string]string{
+				"message": "Invalid user ID format",
+			}
+
+			return c.JSON(http.StatusBadRequest, res)
 		}
 
 		// Bind the request payload
@@ -49,15 +63,21 @@ func UpdatePostHandler(db *sql.DB) echo.HandlerFunc {
 		query := `UPDATE posts SET content = $1, date_updated = $2 WHERE id = $3 AND user_id = $4`
 		result, err := db.Exec(query, req.Content, time.Now(), postId, userIdStr)
 		if err != nil {
-			return c.String(http.StatusInternalServerError, "Error updating post.")
+			res := map[string]string{
+				"message": "Error updating post.",
+			}
+
+			return c.JSON(http.StatusInternalServerError, res)
 		}
 
 		// Check if a post was updated
 		rowsAffected, err := result.RowsAffected()
 		if err != nil || rowsAffected == 0 {
-			return c.JSON(http.StatusNotFound, map[string]string{
-				"message": "Post not found or no changes made.",
-			})
+
+			res := map[string]string{
+				"message": "Error updating post.",
+			}
+			return c.JSON(http.StatusNotFound, res)
 		}
 
 		// Create a response with the updated post
