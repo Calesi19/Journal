@@ -28,6 +28,14 @@ func RegisterRoutes(e *echo.Echo) {
 
 	// health check
 	e.GET("/health", func(c echo.Context) error {
+		err := database.DB.Ping()
+		if err != nil {
+			return c.JSON(500, map[string]string{
+				"status":   "error",
+				"database": "error",
+			})
+		}
+
 		response := map[string]string{
 			"status":   "ok",
 			"database": "ok",
