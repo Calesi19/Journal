@@ -1,4 +1,3 @@
-using BCrypt.Net;
 using JournalApi.Models;
 using Microsoft.AspNetCore.Identity;
 
