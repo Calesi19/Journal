@@ -12,27 +12,25 @@ using Npgsql;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add Database
-builder.Services.AddTransient<IDbConnection>(
-    x => new NpgsqlConnection(
-        builder.Configuration.GetConnectionString("DatabaseConnection")));
+builder.Services.AddTransient<IDbConnection>(x => new NpgsqlConnection(
+    builder.Configuration.GetConnectionString("DatabaseConnection")
+));
 
 // Register services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
-builder.Services.AddScoped<IPasswordStrengthValidatorService,
-                           PasswordStrengthValidatorService>();
+builder.Services.AddScoped<IPasswordHasherService, BCryptPasswordHasherService>();
+builder.Services.AddScoped<IPasswordStrengthValidatorService, PasswordStrengthValidatorService>();
 
 // Setup JWT Authentication Configuration
 var jwtConfig = builder.Configuration.GetSection("JwtConfig");
 
-builder.Services
-    .AddAuthentication(options =>
+builder
+    .Services.AddAuthentication(options =>
     {
-        options.DefaultAuthenticateScheme =
-            JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
     .AddJwtBearer(options =>
@@ -46,45 +44,43 @@ builder.Services
             ValidIssuer = jwtConfig["Issuer"],
             ValidAudience = jwtConfig["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-              Encoding.UTF8.GetBytes(jwtConfig["SecretKey"] ?? string.Empty)),
+                Encoding.UTF8.GetBytes(jwtConfig["SecretKey"] ?? string.Empty)
+            ),
         };
 
         options.Events = new JwtBearerEvents
         {
-            OnAuthenticationFailed =
-              context =>
-              {
-                  context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                  context.Response.ContentType = "application/json";
+            OnAuthenticationFailed = context =>
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
 
-                  var response = new
-                  {
-                      response = new { isAuthorized = false },
-                      messageText =
-                      "You are not authenticated to access " + "this resource.",
-                  };
+                var response = new
+                {
+                    response = new { isAuthorized = false },
+                    messageText = "You are not authenticated to access " + "this resource.",
+                };
 
-                  var result = JsonSerializer.Serialize(response);
+                var result = JsonSerializer.Serialize(response);
 
-                  return context.Response.WriteAsync(result);
-              },
+                return context.Response.WriteAsync(result);
+            },
 
-            OnChallenge =
-              context =>
-              {
-                  context.HandleResponse();
-                  context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                  context.Response.ContentType = "application/json";
+            OnChallenge = context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
 
-                  var response = new
-                  {
-                      response = new { isAuthorized = false },
-                      messageText = "You are not authorized to access this resource.",
-                  };
+                var response = new
+                {
+                    response = new { isAuthorized = false },
+                    messageText = "You are not authorized to access this resource.",
+                };
 
-                  var result = JsonSerializer.Serialize(response);
-                  return context.Response.WriteAsync(result);
-              },
+                var result = JsonSerializer.Serialize(response);
+                return context.Response.WriteAsync(result);
+            },
         };
     });
 
@@ -96,7 +92,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(
         "AllowAll",
-        builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+        builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+    );
 });
 
 var app = builder.Build();
