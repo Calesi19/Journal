@@ -21,27 +21,42 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		authHeader := c.Request().Header.Get("Authorization")
 
 		if authHeader == "" {
-			return c.String(http.StatusUnauthorized, "Missing Authorization header")
+
+			res := map[string]string{
+				"message": "Missing Authorization header",
+			}
+			return c.JSON(http.StatusUnauthorized, res)
 		}
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
 		token, err := parseToken(tokenString)
 		if err != nil || !token.Valid {
-			return c.String(http.StatusUnauthorized, "Invalid or expired token")
+
+			res := map[string]string{
+				"message": "Invalid token",
+			}
+			return c.JSON(http.StatusUnauthorized, res)
 		}
 
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
-			return c.String(http.StatusUnauthorized, "Invalid token claims")
+			res := map[string]string{
+				"message": "Invalid token claims",
+			}
+
+			return c.JSON(http.StatusUnauthorized, res)
 		}
 
 		userId, ok := claims["userId"].(string)
 		if !ok || userId == "" {
-			return c.String(http.StatusUnauthorized, "userId not found in token")
+			res := map[string]string{
+				"message": "userId not found in token",
+			}
+			return c.JSON(http.StatusUnauthorized, res)
 		}
 
-		// Store userId in the context
+		// Store userId in the context for every handler to access
 		c.Set("userId", userId)
 
 		return next(c)
