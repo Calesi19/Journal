@@ -11,10 +11,6 @@ import (
 )
 
 func RegisterRoutes(e *echo.Echo) {
-	// Apply middleware globally
-	e.Use(middleware.RequestUnwrapper)
-	e.Use(middleware.ResponseWrapper)
-
 	// auth routes
 	e.POST("/login", auth.LoginHandler(database.DB))
 	e.POST("/refresh-token", auth.RefreshTokenHandler())
