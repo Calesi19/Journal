@@ -3,7 +3,6 @@
 import React, { useState, Suspense, useEffect } from "react";
 import { Tabs, Tab, Card, CardBody, Input, Button } from "@nextui-org/react";
 import axiosInstance from "../../utils/axiosInstance"; // Import Axios instance
-import { signUp } from "../../utils/auth"; // Keep signUp function if needed
 import { useSearchParams } from "next/navigation";
 
 export default function LoginPage(): React.JSX.Element {
@@ -71,7 +70,22 @@ function Login(): React.JSX.Element {
     }
     setIsSubmitting(true); // Start spinner
     try {
-      await signUp(email, password);
+
+      const response = await axiosInstance.post("/accounts", {
+        request: {
+          email: email,
+          password: password,
+        },
+      });
+
+      const { accessToken, refreshToken } = response.data.response;
+
+      // Store tokens in local storage, then redirect
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      window.location.href = "/feed";
+
       // Redirect to dashboard or home page
     } catch (error) {
       console.error("Error creating account:", (error as Error).message);
