@@ -75,7 +75,10 @@ export default function FeedPage(): React.JSX.Element {
 
 
 
-function NewPost({ onPostCreated }: { onPostCreated: (post: PostType) => void }): React.JSX.Element {
+function NewPost({ onPostCreated }: {
+  onPostCreated: (post: PostType) =>
+    void
+}): React.JSX.Element {
   const [content, setContent] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
@@ -92,7 +95,13 @@ function NewPost({ onPostCreated }: { onPostCreated: (post: PostType) => void })
         request: { content },
       });
 
-      const newPost: PostType = response.data.response.post;
+      const newPostId = response.data.response.postId;
+
+      const newPost: PostType = {
+        id: newPostId,
+        content,
+        dateCreated: new Date().toISOString(),
+      };
 
       // Add the new post to the list
       onPostCreated(newPost);
