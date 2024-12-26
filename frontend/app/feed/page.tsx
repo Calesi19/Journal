@@ -20,6 +20,7 @@ type PostType = {
   dateCreated: string;
 };
 
+
 export default function FeedPage(): React.JSX.Element {
   const [posts, setPosts] = useState<PostType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,13 +41,18 @@ export default function FeedPage(): React.JSX.Element {
     fetchPosts();
   }, []);
 
+  // Function to add new post dynamically
+  const handleNewPost = (newPost: PostType) => {
+    setPosts((prevPosts) => [newPost, ...prevPosts]);
+  };
+
   return (
     <section className="flex container w-full h-full overflow-hidden pt-16 gap-16">
       <div className="w-1/3 hidden md:flex">
         <Menu />
       </div>
       <div className="md:w-2/3 w-full overflow-scroll hide-scrollbar">
-        <NewPost />
+        <NewPost onPostCreated={handleNewPost} />
         {loading ? (
           <>
             <PostSkeleton />
@@ -67,7 +73,9 @@ export default function FeedPage(): React.JSX.Element {
   );
 }
 
-function NewPost(): React.JSX.Element {
+
+
+function NewPost({ onPostCreated }: { onPostCreated: (post: PostType) => void }): React.JSX.Element {
   const [content, setContent] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
@@ -80,11 +88,14 @@ function NewPost(): React.JSX.Element {
     setLoading(true);
 
     try {
-      await axiosInstance.post("/accounts/posts", {
-        request: {
-          content: content,
-        },
+      const response = await axiosInstance.post("/accounts/posts", {
+        request: { content },
       });
+
+      const newPost: PostType = response.data.response.post;
+
+      // Add the new post to the list
+      onPostCreated(newPost);
 
       // Clear the input field after successful post
       setContent("");
@@ -114,6 +125,7 @@ function NewPost(): React.JSX.Element {
     </section>
   );
 }
+
 
 function Post({
   content,
