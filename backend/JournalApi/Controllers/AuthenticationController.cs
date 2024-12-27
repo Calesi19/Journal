@@ -49,6 +49,31 @@ public class AuthenticationController : ControllerBase
         var token = _tokenService.GenerateAccessToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken(user);
 
+        // Set HttpOnly, Secure Cookies for Tokens
+        Response.Cookies.Append(
+            "AccessToken",
+            token,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, // Only send over HTTPS
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddHours(1),
+            }
+        );
+
+        Response.Cookies.Append(
+            "RefreshToken",
+            refreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddDays(7),
+            }
+        );
+
         var response = new LoginResponse
         {
             IsSuccess = true,
@@ -81,6 +106,30 @@ public class AuthenticationController : ControllerBase
 
         var token = _tokenService.GenerateAccessToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken(user);
+
+        Response.Cookies.Append(
+            "AccessToken",
+            token,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, // Only send over HTTPS
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddHours(1),
+            }
+        );
+
+        Response.Cookies.Append(
+            "RefreshToken",
+            refreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddDays(7),
+            }
+        );
 
         var response = new LoginResponse { AccessToken = token, RefreshToken = refreshToken };
 

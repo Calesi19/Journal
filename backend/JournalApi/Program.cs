@@ -50,6 +50,16 @@ builder
 
         options.Events = new JwtBearerEvents
         {
+            OnMessageReceived = context =>
+            {
+                // Check cookies for access token if not present in Authorization header
+                if (string.IsNullOrEmpty(context.Token))
+                {
+                    context.Token = context.Request.Cookies["AccessToken"];
+                }
+                return Task.CompletedTask;
+            },
+
             OnAuthenticationFailed = context =>
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
