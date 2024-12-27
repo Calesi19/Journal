@@ -177,7 +177,7 @@ function Login(): React.JSX.Element {
       </Card>
       <div>
         <p className="text-center mt-4">
-          <a href="#" className="text-default-300 hover:text-blue-500">
+          <a href="/reset-password" className="text-default-300 hover:text-blue-500">
             Forgot Password?
           </a>
         </p>
