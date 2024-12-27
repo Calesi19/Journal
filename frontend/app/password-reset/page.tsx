@@ -8,9 +8,13 @@ import { useSearchParams } from "next/navigation";
 
 export default function PasswordResetPage(): React.JSX.Element {
     return (
-        <div>
-            <EmailBox />
-        </div>
+        <section className="flex container justify-center items-center w-full h-full overflow-hidden">
+            <div className="absolute top-1/4 transform -translate-y-1/6">
+                <Suspense fallback={<div>Loading...</div>}>
+                    <EmailBox />
+                </Suspense>
+            </div>
+        </section>
     );
 }
 
