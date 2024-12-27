@@ -14,10 +14,15 @@ axiosInstance.interceptors.request.use(
     // Get the access token from local storage
     const accessToken = localStorage.getItem("accessToken");
 
+    if (!accessToken) {
+      config.headers["Authorization"] = ``;
+    }
+
     // If the access token exists, include it in the Authorization header
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
+
 
     return config;
   },
