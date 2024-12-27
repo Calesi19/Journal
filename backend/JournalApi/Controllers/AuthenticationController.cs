@@ -113,9 +113,18 @@ public class AuthenticationController : ControllerBase
 
         await _userRepository.AddAsync(newUser);
 
+        var bearertoken = _tokenService.GenerateAccessToken(newUser);
+        var refreshToken = _tokenService.GenerateRefreshToken(newUser);
+
         var response = new ApiResponse<CreateAccountResponse>
         {
-            Response = new CreateAccountResponse() { IsSuccess = true, Email = newUser.Email },
+            Response = new CreateAccountResponse()
+            {
+                IsSuccess = true,
+                Email = newUser.Email,
+                AccessToken = bearertoken,
+                RefreshToken = refreshToken,
+            },
         };
 
         return Created("", response);
