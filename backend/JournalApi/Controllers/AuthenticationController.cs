@@ -36,18 +36,25 @@ public class AuthenticationController : ControllerBase
 
         if (user == null)
         {
-            return Unauthorized();
+            var res = new LoginResponse { Message = "User not found." };
+            return Unauthorized(res);
         }
 
         if (!_passwordHasherService.VerifyPasswordMatch(request.Password, user.Password))
         {
-            return Unauthorized();
+            var res = new LoginResponse { Message = "Invalid credentials." };
+            return Unauthorized(res);
         }
 
         var token = _tokenService.GenerateAccessToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken(user);
 
-        var response = new LoginResponse { AccessToken = token, RefreshToken = refreshToken };
+        var response = new LoginResponse
+        {
+            IsSuccess = true,
+            AccessToken = token,
+            RefreshToken = refreshToken,
+        };
 
         return Ok(response);
     }
@@ -89,13 +96,15 @@ public class AuthenticationController : ControllerBase
 
         if (user != null)
         {
-            return BadRequest();
+            var res = new CreateAccountResponse { Message = "User already exists." };
+            return BadRequest(res);
         }
 
         // Validate the password is strong enough
         if (!_passwordStrengthValidatorService.IsPasswordStrong(request.Password))
         {
-            return BadRequest();
+            var res = new CreateAccountResponse { Message = "Password is not strong enough." };
+            return BadRequest(res);
         }
 
         // Hash the password
@@ -111,7 +120,6 @@ public class AuthenticationController : ControllerBase
         var response = new CreateAccountResponse
         {
             IsSuccess = true,
-            Email = newUser.Email,
             AccessToken = bearertoken,
             RefreshToken = refreshToken,
         };
@@ -128,7 +136,8 @@ public class AuthenticationController : ControllerBase
 
         if (user == null)
         {
-            return BadRequest();
+            var res = new ActionStatusResponse { IsSuccess = false, Message = "User not found." };
+            return BadRequest(res);
         }
 
         await _userRepository.DeleteAsync(userId);
