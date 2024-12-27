@@ -30,16 +30,16 @@ public class AuthenticationController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] ApiRequest<LoginRequest> request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var user = await _userRepository.FindByEmailAsync(request.Request.Email);
+        var user = await _userRepository.FindByEmailAsync(request.Email);
 
         if (user == null)
         {
             return Unauthorized();
         }
 
-        if (!_passwordHasherService.VerifyPasswordMatch(request.Request.Password, user.Password))
+        if (!_passwordHasherService.VerifyPasswordMatch(request.Password, user.Password))
         {
             return Unauthorized();
         }
@@ -88,12 +88,10 @@ public class AuthenticationController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("accounts")]
-    public async Task<IActionResult> CreateAccount(
-        [FromBody] ApiRequest<CreateAccountRequest> request
-    )
+    public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequest request)
     {
         // Check if the user already exists
-        var user = await _userRepository.FindByEmailAsync(request.Request.Email);
+        var user = await _userRepository.FindByEmailAsync(request.Email);
 
         if (user != null)
         {
@@ -101,15 +99,15 @@ public class AuthenticationController : ControllerBase
         }
 
         // Validate the password is strong enough
-        if (!_passwordStrengthValidatorService.IsPasswordStrong(request.Request.Password))
+        if (!_passwordStrengthValidatorService.IsPasswordStrong(request.Password))
         {
             return BadRequest();
         }
 
         // Hash the password
-        var hashedPassword = _passwordHasherService.HashPassword(request.Request.Password);
+        var hashedPassword = _passwordHasherService.HashPassword(request.Password);
 
-        var newUser = new User { Email = request.Request.Email, Password = hashedPassword };
+        var newUser = new User { Email = request.Email, Password = hashedPassword };
 
         await _userRepository.AddAsync(newUser);
 

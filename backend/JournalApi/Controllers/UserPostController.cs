@@ -60,7 +60,7 @@ public class UserPostController : ControllerBase
     [HttpPost("accounts/posts")]
     public async Task<IActionResult> CreatePost(
         [FromHeader] string Authorization,
-        [FromBody] ApiRequest<CreatePostRequest> request
+        [FromBody] CreatePostRequest request
     )
     {
         var userId = _tokenService.GetUserIdFromToken(Authorization);
@@ -68,7 +68,7 @@ public class UserPostController : ControllerBase
         var newPost = new Post
         {
             UserId = userId,
-            Content = request.Request.Content,
+            Content = request.Content,
             DateCreated = DateTime.UtcNow,
             DateUpdated = DateTime.UtcNow,
         };
@@ -119,7 +119,7 @@ public class UserPostController : ControllerBase
     public async Task<IActionResult> UpdatePost(
         [FromHeader] string Authorization,
         [FromRoute] Guid postId,
-        [FromBody] ApiRequest<CreatePostRequest> request
+        [FromBody] CreatePostRequest request
     )
     {
         var userId = _tokenService.GetUserIdFromToken(Authorization);
@@ -140,7 +140,7 @@ public class UserPostController : ControllerBase
         {
             Id = postId,
             UserId = userId,
-            Content = request.Request.Content,
+            Content = request.Content,
             DateCreated = post.DateCreated,
             DateUpdated = DateTime.UtcNow,
         };
