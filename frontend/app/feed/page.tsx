@@ -1,5 +1,6 @@
 "use client";
 
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react";
 import {
   Input,
   ScrollShadow,
@@ -24,6 +25,29 @@ type PostType = {
 export default function FeedPage(): React.JSX.Element {
   const [posts, setPosts] = useState<PostType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPost, setSelectedPost] = useState<PostType | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const openEditModal = (post: PostType) => {
+    setSelectedPost(post);
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedPost(null);
+  };
+
+  const openDeleteModal = (post: PostType) => {
+    setSelectedPost(post);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedPost(null);
+  };
 
   useEffect(() => {
     async function fetchPosts() {
@@ -37,7 +61,6 @@ export default function FeedPage(): React.JSX.Element {
         setLoading(false);
       }
     }
-
     fetchPosts();
   }, []);
 
@@ -51,24 +74,31 @@ export default function FeedPage(): React.JSX.Element {
       <div className="w-1/3 hidden md:flex">
         <Menu />
       </div>
-      <div className="md:w-2/3 w-full overflow-scroll hide-scrollbar">
-        <NewPost onPostCreated={handleNewPost} />
-        {loading ? (
-          <>
-            <PostSkeleton />
-            <PostSkeleton />
-            <PostSkeleton />
-          </>
-        ) : (
-          posts.map((post: PostType) => (
-            <Post
-              key={post.id}
-              content={post.content}
-              date={new Date(post.dateCreated).toLocaleDateString()}
-            />
-          ))
-        )}
+
+      <div className="w-full">
+
+        <div className="w-full mb-4">
+          <NewPost onPostCreated={handleNewPost} />
+        </div>
+        <div className="w-full h-full overflow-scroll hide-scrollbar">
+          {loading ? (
+            <>
+              <PostSkeleton />
+              <PostSkeleton />
+            </>
+          ) : (
+            posts.map((post) => (
+              <Post key={post.id} post={post} onEdit={openEditModal} onDelete={openDeleteModal} />
+            ))
+          )}
+          <div className="h-[400px]" />
+
+        </div>
+
       </div>
+
+      <DeletePostModal isOpen={isDeleteModalOpen} onClose={closeDeleteModal} post={selectedPost} />
+      <EditPostModal isOpen={isEditModalOpen} onClose={closeEditModal} post={selectedPost} />
     </section>
   );
 }
@@ -137,29 +167,50 @@ function NewPost({ onPostCreated }: {
 
 
 function Post({
-  content,
-  date,
+  post,
+  onEdit,
+  onDelete,
 }: {
-  content: string;
-  date: string;
+  post: PostType;
+  onEdit: (post: PostType) => void;
+  onDelete: (post: PostType) => void;
 }): React.JSX.Element {
   return (
-    <div className="my-10 group ">
+    <div className="mb-10 group">
       <Card>
         <CardHeader className="pb-0 pt-2 flex-col items-start">
           <p className="text-tiny text-default-500 uppercase font-bold">
-            {date}
+            {new Date(post.dateCreated).toLocaleDateString()}
           </p>
         </CardHeader>
         <CardBody
           className="overflow-visible py-3"
           style={{ whiteSpace: "pre-wrap" }}
         >
-          {content}
+          {post.content}
         </CardBody>
       </Card>
       <div className="text-transparent group-hover:text-white flex flex-row-reverse transition ease-in-out duration-300 ">
-        <a href="#">edit</a>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            onEdit(post);
+          }}
+        >
+          edit
+        </a>
+        <a
+          href="#"
+          className="hover:text-red-500 mr-4"
+          onClick={(e) => {
+            e.preventDefault();
+            onDelete(post);
+          }}
+        >
+          remove
+        </a>
+
       </div>
     </div>
   );
@@ -234,3 +285,132 @@ function SignOut() {
   window.location.href = "/login";
 }
 
+
+type EditPostModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  post: PostType | null;
+};
+
+
+export function EditPostModal({ isOpen, onClose, post }: EditPostModalProps) {
+  const [content, setContent] = useState(post?.content || "");
+  const [date, setDate] = useState(post?.dateCreated || "");
+
+  useEffect(() => {
+    if (post) {
+      setContent(post.content);
+      setDate(new Date(post.dateCreated).toLocaleDateString());
+    }
+  }, [post, isOpen]);
+
+  const handleSave = async () => {
+    if (!content.trim()) {
+      alert("Post content cannot be empty.");
+      return;
+    }
+
+    try {
+      // Update the post via API
+      await axiosInstance.put(`/posts/${post?.id}`, { content });
+
+      alert("Post updated successfully!");
+      onClose();
+      // Optionally: Refresh the posts list
+    } catch (error) {
+      console.error("Error updating post:", error);
+      alert("Failed to update post.");
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} isDismissable={false}>
+      <ModalContent>
+        <ModalHeader>
+          Edit Post
+        </ModalHeader>
+        <ModalBody>
+          <p className="text-sm text-gray-500">
+            {date ? `Created on: ${date}` : ""}
+          </p>
+          <Textarea
+            size="sm"
+            type="text"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            isRequired
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button onClick={onClose}>
+            Cancel
+          </Button>
+          <Button color="primary" onClick={handleSave}>
+            Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
+
+export function DeletePostModal({ isOpen, onClose, post }: EditPostModalProps) {
+  const [content, setContent] = useState(post?.content || "");
+  const [date, setDate] = useState(post?.dateCreated || "");
+
+  useEffect(() => {
+    if (post) {
+      setContent(post.content);
+      setDate(new Date(post.dateCreated).toLocaleDateString());
+    }
+  }, [post, isOpen]);
+
+  const handleSave = async () => {
+    if (!content.trim()) {
+      alert("Post content cannot be empty.");
+      return;
+    }
+
+    try {
+      // Update the post via API
+      await axiosInstance.delete(`/posts/${post?.id}`, { content });
+
+      alert("Post updated successfully!");
+      onClose();
+      // Optionally: Refresh the posts list
+    } catch (error) {
+      console.error("Error updating post:", error);
+      alert("Failed to update post.");
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalContent>
+        <ModalHeader>
+          Delete Post
+        </ModalHeader>
+        <ModalBody>
+          <p className="text-sm text-gray-500">
+            {date ? `Created on: ${date}` : ""}
+          </p>
+          <Textarea
+            size="sm"
+            type="text"
+            value={content}
+            disabled
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button onClick={onClose}>
+            Cancel
+          </Button>
+          <Button color="danger" onClick={handleSave}>
+            Delete Post
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
