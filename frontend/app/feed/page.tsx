@@ -28,7 +28,7 @@ export default function FeedPage(): React.JSX.Element {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await axiosInstance.get("/accounts/posts");
+        const response = await axiosInstance.get("/posts");
         const fetchedPosts = response.data.posts;
         setPosts(fetchedPosts);
       } catch (error) {
@@ -91,7 +91,7 @@ function NewPost({ onPostCreated }: {
     setLoading(true);
 
     try {
-      const response = await axiosInstance.post("/accounts/posts", {
+      const response = await axiosInstance.post("/posts", {
         content,
       });
 
