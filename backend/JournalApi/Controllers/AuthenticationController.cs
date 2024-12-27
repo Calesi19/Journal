@@ -176,6 +176,35 @@ public class AuthenticationController : ControllerBase
         return Created("", response);
     }
 
+    [HttpDelete("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        // Delete Access Token
+        Response.Cookies.Delete(
+            "AccessToken",
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, // Important if using HTTPS
+                SameSite = SameSiteMode.Strict,
+                Path = "/",
+            }
+        );
+
+        // Delete Refresh Token
+        Response.Cookies.Delete(
+            "RefreshToken",
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Path = "/",
+            }
+        );
+        return Ok();
+    }
+
     [HttpDelete("accounts")]
     public async Task<IActionResult> CreateAccount([FromHeader] string Authorization)
     {
