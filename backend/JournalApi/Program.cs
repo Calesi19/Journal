@@ -97,11 +97,25 @@ builder
 builder.Services.AddControllers();
 
 // Add CORS services and allow all origins, methods, and headers
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy(
+//         "AllowAll",
+//         builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+//     );
+// });
+
+// Add Cors for specific origins
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
-        "AllowAll",
-        builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+        "AllowSpecificOrigin",
+        builder =>
+            builder
+                .WithOrigins("https://journal.carloslespin.com") // <-- Set the frontend origin here
+                .AllowCredentials() // <-- Allow cookies and credentials
+                .AllowAnyMethod()
+                .AllowAnyHeader()
     );
 });
 
@@ -109,7 +123,9 @@ var app = builder.Build();
 
 // Configure pipeline
 app.UseRouting();
-app.UseCors("AllowAll");
+
+// app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigins");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();
