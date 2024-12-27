@@ -89,12 +89,14 @@ public class UserPostController : ControllerBase
 
         if (post == null)
         {
-            return NotFound();
+            var res = new ActionStatusResponse { IsSuccess = false, Message = "Post not found" };
+            return NotFound(res);
         }
 
         if (post.UserId != userId)
         {
-            return Unauthorized();
+            var res = new ActionStatusResponse { IsSuccess = false, Message = "Unauthorized" };
+            return Unauthorized(res);
         }
 
         await _postRepository.DeleteAsync(postId);
@@ -117,12 +119,14 @@ public class UserPostController : ControllerBase
 
         if (post == null)
         {
-            return NotFound();
+            var res = new ActionStatusResponse { IsSuccess = false, Message = "Post not found" };
+            return NotFound(res);
         }
 
         if (post.UserId != userId)
         {
-            return Ok(new { PostUserId = post.UserId, UserId = userId });
+            var res = new ActionStatusResponse { IsSuccess = false, Message = "Unauthorized" };
+            return Unauthorized(res);
         }
 
         var updatedPost = new Post
