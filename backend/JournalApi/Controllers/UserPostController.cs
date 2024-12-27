@@ -20,7 +20,7 @@ public class UserPostController : ControllerBase
         _tokenService = tokenService;
     }
 
-    [HttpGet("accounts/posts")]
+    [HttpGet("/posts")]
     public async Task<IActionResult> GetPosts(
         [FromHeader] string Authorization,
         [FromQuery] QueryParameters parameters
@@ -54,7 +54,7 @@ public class UserPostController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("accounts/posts")]
+    [HttpPost("/posts")]
     public async Task<IActionResult> CreatePost(
         [FromHeader] string Authorization,
         [FromBody] CreatePostRequest request
@@ -77,7 +77,7 @@ public class UserPostController : ControllerBase
         return Ok(response);
     }
 
-    [HttpDelete("accounts/posts/{postId}")]
+    [HttpDelete("/posts/{postId}")]
     public async Task<IActionResult> DeletePost(
         [FromHeader] string Authorization,
         [FromRoute] Guid postId
@@ -106,7 +106,7 @@ public class UserPostController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPut("accounts/posts/{postId}")]
+    [HttpPut("/posts/{postId}")]
     public async Task<IActionResult> UpdatePost(
         [FromHeader] string Authorization,
         [FromRoute] Guid postId,
