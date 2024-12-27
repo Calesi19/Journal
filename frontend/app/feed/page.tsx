@@ -219,7 +219,7 @@ function Menu(): React.JSX.Element {
           <a href="/settings">Settings</a>
         </div>
         <div className="pb-16">
-          <a href="/login" className="hover:text-red-500">
+          <a onClick={SignOut} className="hover:text-red-500">
             Sign Out
           </a>
         </div>
@@ -227,3 +227,13 @@ function Menu(): React.JSX.Element {
     </section>
   );
 }
+
+function SignOut() {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  window.location.href = "/login";
+}
+
+
+
+
