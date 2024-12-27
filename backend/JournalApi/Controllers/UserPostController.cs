@@ -42,16 +42,13 @@ public class UserPostController : ControllerBase
         // Calculate pages left
         var pagesLeft = Math.Max(totalPages - parameters.PageNumber.Value, 0);
 
-        var response = new ApiResponse<GetPostsResponse>
+        var response = new GetPostsResponse
         {
-            Response = new GetPostsResponse()
-            {
-                Posts = posts,
-                PageNumber = parameters.PageNumber.Value,
-                PageSize = parameters.PageSize.Value,
-                TotalCount = totalCount,
-                PagesLeft = pagesLeft,
-            },
+            Posts = posts,
+            PageNumber = parameters.PageNumber.Value,
+            PageSize = parameters.PageSize.Value,
+            TotalCount = totalCount,
+            PagesLeft = pagesLeft,
         };
 
         return Ok(response);
@@ -75,11 +72,7 @@ public class UserPostController : ControllerBase
 
         var post = await _postRepository.AddAsync(newPost);
 
-        var response = new ApiResponse<CreatePostResponse>
-        {
-            Response = new CreatePostResponse() { IsSuccess = true, PostId = post.Id },
-            Message = "Post created successfully",
-        };
+        var response = new CreatePostResponse { IsSuccess = true, PostId = post.Id };
 
         return Ok(response);
     }
@@ -106,11 +99,7 @@ public class UserPostController : ControllerBase
 
         await _postRepository.DeleteAsync(postId);
 
-        var response = new ApiResponse<CreatePostResponse>
-        {
-            Response = new CreatePostResponse() { IsSuccess = true, PostId = post.Id },
-            Message = "Post deleted successfully",
-        };
+        var response = new CreatePostResponse { IsSuccess = true, PostId = post.Id };
 
         return Ok(response);
     }
@@ -147,11 +136,7 @@ public class UserPostController : ControllerBase
 
         await _postRepository.UpdateAsync(updatedPost);
 
-        var response = new ApiResponse<CreatePostResponse>
-        {
-            Response = new CreatePostResponse() { IsSuccess = true, PostId = post.Id },
-            Message = "Post updated successfully",
-        };
+        var response = new CreatePostResponse { IsSuccess = true, PostId = post.Id };
 
         return Ok(response);
     }

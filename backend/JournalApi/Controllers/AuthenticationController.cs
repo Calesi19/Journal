@@ -47,10 +47,7 @@ public class AuthenticationController : ControllerBase
         var token = _tokenService.GenerateAccessToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken(user);
 
-        var response = new ApiResponse<LoginResponse>
-        {
-            Response = new LoginResponse() { AccessToken = token, RefreshToken = refreshToken },
-        };
+        var response = new LoginResponse { AccessToken = token, RefreshToken = refreshToken };
 
         return Ok(response);
     }
@@ -78,10 +75,7 @@ public class AuthenticationController : ControllerBase
         var token = _tokenService.GenerateAccessToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken(user);
 
-        var response = new ApiResponse<LoginResponse>
-        {
-            Response = new LoginResponse() { AccessToken = token, RefreshToken = refreshToken },
-        };
+        var response = new LoginResponse { AccessToken = token, RefreshToken = refreshToken };
 
         return Ok(response);
     }
@@ -114,15 +108,12 @@ public class AuthenticationController : ControllerBase
         var bearertoken = _tokenService.GenerateAccessToken(newUser);
         var refreshToken = _tokenService.GenerateRefreshToken(newUser);
 
-        var response = new ApiResponse<CreateAccountResponse>
+        var response = new CreateAccountResponse
         {
-            Response = new CreateAccountResponse()
-            {
-                IsSuccess = true,
-                Email = newUser.Email,
-                AccessToken = bearertoken,
-                RefreshToken = refreshToken,
-            },
+            IsSuccess = true,
+            Email = newUser.Email,
+            AccessToken = bearertoken,
+            RefreshToken = refreshToken,
         };
 
         return Created("", response);
@@ -142,10 +133,7 @@ public class AuthenticationController : ControllerBase
 
         await _userRepository.DeleteAsync(userId);
 
-        var response = new ApiResponse<ActionStatusResponse>
-        {
-            Response = new ActionStatusResponse() { IsSuccess = true },
-        };
+        var response = new ActionStatusResponse { IsSuccess = true };
 
         return Created("", response);
     }
