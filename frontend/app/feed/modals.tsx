@@ -99,7 +99,7 @@ export function DeletePostModal({ isOpen, onClose, post }: ModalProps) {
 
     try {
       // Update the post via API
-      await axiosInstance.delete(`/posts/${post?.id}`, { content });
+      await axiosInstance.delete(`/posts/${post?.id}`);
 
       alert("Post updated successfully!");
       onClose();
