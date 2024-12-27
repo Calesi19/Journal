@@ -57,8 +57,8 @@ builder
 
                 var response = new
                 {
-                    response = new { isAuthorized = false },
-                    messageText = "You are not authenticated to access " + "this resource.",
+                    isAuthorized = false,
+                    messageText = "You are not authenticated to access this resource.",
                 };
 
                 var result = JsonSerializer.Serialize(response);
@@ -74,7 +74,7 @@ builder
 
                 var response = new
                 {
-                    response = new { isAuthorized = false },
+                    isAuthorized = false,
                     messageText = "You are not authorized to access this resource.",
                 };
 
