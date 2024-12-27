@@ -62,7 +62,6 @@ builder
                 };
 
                 var result = JsonSerializer.Serialize(response);
-
                 return context.Response.WriteAsync(result);
             },
 
