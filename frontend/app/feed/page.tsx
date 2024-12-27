@@ -286,14 +286,14 @@ function SignOut() {
 }
 
 
-type EditPostModalProps = {
+type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
   post: PostType | null;
 };
 
 
-export function EditPostModal({ isOpen, onClose, post }: EditPostModalProps) {
+export function EditPostModal({ isOpen, onClose, post }: ModalProps) {
   const [content, setContent] = useState(post?.content || "");
   const [date, setDate] = useState(post?.dateCreated || "");
 
@@ -355,7 +355,7 @@ export function EditPostModal({ isOpen, onClose, post }: EditPostModalProps) {
 }
 
 
-export function DeletePostModal({ isOpen, onClose, post }: EditPostModalProps) {
+export function DeletePostModal({ isOpen, onClose, post }: ModalProps) {
   const [content, setContent] = useState(post?.content || "");
   const [date, setDate] = useState(post?.dateCreated || "");
 
