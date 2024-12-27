@@ -37,13 +37,11 @@ function Login(): React.JSX.Element {
     setIsSubmitting(true); // Start spinner
     try {
       const response = await axiosInstance.post("/login", {
-        request: {
-          email: email,
-          password: password,
-        },
+        email: email,
+        password: password,
       });
 
-      const { accessToken, refreshToken } = response.data.response;
+      const { accessToken, refreshToken } = response.data;
       console.log("Access Token:", accessToken);
       console.log("Refresh Token:", refreshToken);
 
@@ -72,13 +70,11 @@ function Login(): React.JSX.Element {
     try {
 
       const response = await axiosInstance.post("/accounts", {
-        request: {
-          email: email,
-          password: password,
-        },
+        email: email,
+        password: password,
       });
 
-      const { accessToken, refreshToken } = response.data.response;
+      const { accessToken, refreshToken } = response.data;
 
       // Store tokens in local storage, then redirect
       localStorage.setItem("accessToken", accessToken);

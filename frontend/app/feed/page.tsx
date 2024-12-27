@@ -29,7 +29,7 @@ export default function FeedPage(): React.JSX.Element {
     async function fetchPosts() {
       try {
         const response = await axiosInstance.get("/accounts/posts");
-        const fetchedPosts = response.data.response.posts;
+        const fetchedPosts = response.data.posts;
         setPosts(fetchedPosts);
       } catch (error) {
         console.error("Error fetching posts:", error);
@@ -92,10 +92,10 @@ function NewPost({ onPostCreated }: {
 
     try {
       const response = await axiosInstance.post("/accounts/posts", {
-        request: { content },
+        content,
       });
 
-      const newPostId = response.data.response.postId;
+      const newPostId = response.data.postId;
 
       const newPost: PostType = {
         id: newPostId,
@@ -233,7 +233,4 @@ function SignOut() {
   localStorage.removeItem("refreshToken");
   window.location.href = "/login";
 }
-
-
-
 
