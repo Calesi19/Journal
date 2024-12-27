@@ -179,7 +179,6 @@ public class AuthenticationController : ControllerBase
     [HttpDelete("logout")]
     public async Task<IActionResult> Logout()
     {
-        // Delete Access Token
         Response.Cookies.Delete(
             "AccessToken",
             new CookieOptions
@@ -191,7 +190,6 @@ public class AuthenticationController : ControllerBase
             }
         );
 
-        // Delete Refresh Token
         Response.Cookies.Delete(
             "RefreshToken",
             new CookieOptions
@@ -202,7 +200,10 @@ public class AuthenticationController : ControllerBase
                 Path = "/",
             }
         );
-        return Ok();
+
+        var response = new ActionStatusResponse { IsSuccess = true, Message = "Cleared Cookies." };
+
+        return Ok(response);
     }
 
     [HttpDelete("accounts")]
