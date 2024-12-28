@@ -17,6 +17,10 @@ func RegisterRoutes(e *echo.Echo) {
 	e.POST("/login", auth.LoginHandler(database.DB))
 	e.POST("/refresh-token", auth.RefreshTokenHandler())
 
+	e.POST("/cookies/login", auth.LoginHandler(database.DB))
+	e.POST("/cookies/refresh-token", auth.RefreshTokenHandler())
+	e.POST("/cookies/logout", auth.LoginHandler(database.DB))
+
 	e.POST("/accounts", accounts.CreateAccountHandler(database.DB))
 
 	// protected routes
